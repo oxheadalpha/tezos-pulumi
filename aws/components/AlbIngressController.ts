@@ -1,7 +1,6 @@
 import * as aws from "@pulumi/aws"
 import * as pulumi from "@pulumi/pulumi"
 import * as k8s from "@pulumi/kubernetes"
-import * as eks from "@pulumi/eks"
 
 import { ignoreChangesTransformation } from "helpers"
 
@@ -24,8 +23,8 @@ interface AlbIngressControllerArgs {
   values?: pulumi.Inputs
   /** Helm chart version */
   version?: string
-  /** The name of the cluster */
-  clusterName?: string
+  /** The name of the cluster. This is required by the alb controller chart */
+  clusterName: string
   /** Namespace to deploy the chart in */
   namespace?: string
 
