@@ -24,7 +24,7 @@ interface ExternalDnsArgs {
   txtOwnerId?: string
   /** List of hosted zone id's. Used for external-dns policy Action
    * "route53:ChangeResourceRecordSets", and as the "zoneIdFilters" value for
-   * the external-dns Helm chart. Defualts to "hostedzone/*".
+   * the external-dns Helm chart. Defaults to "hostedzone/*".
    */
   zoneIdFilters?: pulumi.Input<string>[]
   /** Namespace to deploy the chart in. Defaults to kube-system */
@@ -35,7 +35,8 @@ interface ExternalDnsArgs {
 
 /**
  * Deploy the external-dns Helm chart including the necessary IAM policy.
- * Helm chart: https://github.com/kubernetes-sigs/external-dns
+ * Chart repo: https://github.com/kubernetes-sigs/external-dns
+ * Helm chart:  https://artifacthub.io/packages/helm/bitnami/external-dns
  */
 export default class ExteranlDns extends pulumi.ComponentResource {
   readonly args: ExternalDnsArgs

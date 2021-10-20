@@ -8,7 +8,7 @@ import { mergeHelmValues, parseYamlFile } from "helpers"
 import { dir } from "console"
 
 interface TezosHelmChartArgs {
-  /** tezos-k8s Helm chart values */
+  /** tezos-k8s Helm chart values https://github.com/oxheadalpha/tezos-k8s */
   values?: pulumi.Inputs
   /**
    * Path to a tezos-k8s Helm chart values file(s). File precedence goes from

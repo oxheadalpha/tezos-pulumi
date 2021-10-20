@@ -1,7 +1,7 @@
 import * as pulumi from "@pulumi/pulumi"
 import * as k8s from "@pulumi/kubernetes"
 
-import { getIngressResourceArgs } from "./alb"
+import { fillInArgDefaults, getIngressResourceArgs } from "./alb"
 import { AlbIngressArgs } from "./types"
 
 /** Create a Tzkt ingress to expose your Tzkt indexers' endpoint. A load
@@ -22,6 +22,7 @@ export default class TzktIngress extends pulumi.ComponentResource {
    *
    * @param name The _unique_ name of the resource.
    * @param args The arguments to use to populate this resource's properties.
+   * Defaults will be filled in by the component.
    * @param opts A bag of options that control this resource's behavior.
    */
   constructor(
@@ -32,21 +33,20 @@ export default class TzktIngress extends pulumi.ComponentResource {
     super("tezos-aws:ingress:TzktIngress", name, args, opts)
 
     const port = 5000
-    const healthcheck = {
+    const internalArgs = {
+      ingressServiceBackend: {
+        name: "tzkt-indexer",
+        port: { number: port },
+      },
       healthcheckPath: "/v1/blocks/count",
       healthcheckPort: String(port),
     }
 
-    const { ingressResourceArgs, filledInArgs } = getIngressResourceArgs(
+    const filledInArgs = fillInArgDefaults(args, internalArgs)
+    const ingressResourceArgs = getIngressResourceArgs(
       name,
-      args,
-      {
-        ingressServiceBackend: {
-          name: "tzkt-indexer",
-          port: { number: port },
-        },
-        ...healthcheck,
-      }
+      filledInArgs,
+      internalArgs
     )
 
     this.args = filledInArgs
@@ -59,4 +59,3 @@ export default class TzktIngress extends pulumi.ComponentResource {
     })
   }
 }
-

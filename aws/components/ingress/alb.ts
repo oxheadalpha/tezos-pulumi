@@ -48,7 +48,7 @@ const getAnnotations = (
  * Function fills in nested objects in userInputArgs via pass by reference. It
  * does not deep copy the object.
  */
-export const fillInAlbIngressArgs = (
+export const fillInArgDefaults = (
   userInputArgs: AlbIngressArgs,
   internalArgs: InternalAlbIngressArgs
 ): AlbIngressArgs => {
@@ -65,20 +65,15 @@ export const fillInAlbIngressArgs = (
 
 export const getIngressResourceArgs = (
   name: string,
-  userInputArgs: AlbIngressArgs,
+  args: AlbIngressArgs,
   internalArgs: InternalAlbIngressArgs
-): {
-  ingressResourceArgs: k8s.networking.v1.IngressArgs
-  filledInArgs: AlbIngressArgs
-} => {
-  const filledInArgs = fillInAlbIngressArgs(userInputArgs, internalArgs)
-
-  if (filledInArgs.pulumiSkipAwait) {
+): k8s.networking.v1.IngressArgs => {
+  if (args.pulumiSkipAwait) {
     pulumi.log.info(`
         ${name}: Pulumi will not wait for the ingress to be ready. This is because
         it has an external dependency on the AWS load balancer controller Helm chart and can't know
         when the controller is ready. Pulumi errors out if the ingress retries to resolve.
-        If you want, you can turn this setting of by setting the pulumiSkipAwait param to false.`)
+        If you want, you can turn this setting of by setting the pulumiSkipAwait arg to false.`)
   }
 
   const paths: k8s.types.input.networking.v1.HTTPIngressPath[] = [
@@ -91,7 +86,7 @@ export const getIngressResourceArgs = (
     },
   ]
 
-  if (shouldEnableHttps(filledInArgs)) {
+  if (shouldEnableHttps(args)) {
     paths.unshift({
       path: "/*",
       pathType: "Prefix",
@@ -105,12 +100,12 @@ export const getIngressResourceArgs = (
   }
 
   const ingressResourceArgs: k8s.networking.v1.IngressArgs = {
-    metadata: filledInArgs.metadata,
+    metadata: args.metadata,
     spec: {
-      tls: filledInArgs.tls,
+      tls: args.tls,
       rules: [
         {
-          host: filledInArgs.host,
+          host: args.host,
           http: {
             paths,
           },
@@ -119,5 +114,5 @@ export const getIngressResourceArgs = (
     },
   }
 
-  return { ingressResourceArgs, filledInArgs }
+  return ingressResourceArgs
 }

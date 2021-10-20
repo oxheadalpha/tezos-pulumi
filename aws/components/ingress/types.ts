@@ -1,4 +1,3 @@
-import * as k8s from "@pulumi/kubernetes"
 import * as k8sInputTypes from "@pulumi/kubernetes/types/input"
 
 

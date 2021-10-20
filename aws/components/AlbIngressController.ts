@@ -23,9 +23,9 @@ interface AlbIngressControllerArgs {
   values?: pulumi.Inputs
   /** Helm chart version */
   version?: string
-  /** The name of the cluster. This is required by the alb controller chart */
+  /** The name of the cluster. This is required by the alb controller chart. */
   clusterName: string
-  /** Namespace to deploy the chart in */
+  /** Namespace to deploy the chart in. Defaults to kube-system. */
   namespace?: string
 
   // skipAwait?: boolean
