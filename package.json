@@ -1,17 +1,18 @@
 {
-  "name": "tezos-aws",
+  "name": "tezos-pulumi",
   "version": "1.0.0",
-  "main": "index.js",
-  "author": "Aryeh Harris <harryttd@gmail.com>",
+  "author": "Aryeh Harris <aryeh.harris@oxheadalpha.com>",
   "license": "MIT",
   "dependencies": {
     "@pulumi/awsx": "0.31.0",
     "@pulumi/eks": "0.33.0",
     "@pulumi/pulumi": "3.11.0",
     "cron-parser": "3.5.0",
+    "deepmerge": "4.2.2",
     "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@types/node": "16.7.9"
+    "@types/node": "16.7.9",
+    "tsconfig-paths": "3.11.0"
   }
 }
