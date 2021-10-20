@@ -1,0 +1,4 @@
+name: tezos-pulumi
+runtime:
+  name: nodejs
+description: tezos-pulumi
