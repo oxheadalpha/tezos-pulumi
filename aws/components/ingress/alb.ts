@@ -44,6 +44,36 @@ const getAnnotations = (
   }
 }
 
+const getIngressPaths = (
+  args: AlbIngressArgs,
+  internalArgs: InternalAlbIngressArgs
+): k8s.types.input.networking.v1.HTTPIngressPath[] => {
+  const paths = [
+    {
+      path: "/*",
+      pathType: "Prefix",
+      backend: {
+        service: internalArgs.ingressServiceBackend,
+      },
+    },
+  ]
+
+  if (shouldEnableHttps(args)) {
+    paths.unshift({
+      path: "/*",
+      pathType: "Prefix",
+      backend: {
+        service: {
+          name: "ssl-redirect",
+          port: { name: "use-annotation" },
+        },
+      },
+    })
+  }
+
+  return paths
+}
+
 /**
  * Function fills in nested objects in userInputArgs via pass by reference. It
  * does not deep copy the object.
@@ -76,29 +106,7 @@ export const getIngressResourceArgs = (
         If you want, you can turn this setting of by setting the pulumiSkipAwait arg to false.`)
   }
 
-  const paths: k8s.types.input.networking.v1.HTTPIngressPath[] = [
-    {
-      path: "/*",
-      pathType: "Prefix",
-      backend: {
-        service: internalArgs.ingressServiceBackend,
-      },
-    },
-  ]
-
-  if (shouldEnableHttps(args)) {
-    paths.unshift({
-      path: "/*",
-      pathType: "Prefix",
-      backend: {
-        service: {
-          name: "ssl-redirect",
-          port: { name: "use-annotation" },
-        },
-      },
-    })
-  }
-
+  const ingressPaths = getIngressPaths(args, internalArgs)
   const ingressResourceArgs: k8s.networking.v1.IngressArgs = {
     metadata: args.metadata,
     spec: {
@@ -107,7 +115,7 @@ export const getIngressResourceArgs = (
         {
           host: args.host,
           http: {
-            paths,
+            paths: ingressPaths,
           },
         },
       ],
