@@ -1,14 +1,17 @@
 import * as pulumi from "@pulumi/pulumi"
 import * as k8s from "@pulumi/kubernetes"
 
-import { fillInArgDefaults, getIngressResourceArgs } from "./alb"
-import { AlbIngressArgs } from "./types"
+import {
+  AlbIngressArgs,
+  fillInArgDefaults,
+  getIngressResourceArgs,
+} from "./alb"
 
 /** Create an RPC ingress to expose your Tezos nodes' RPC endpoint. A load
  * balancer will be created via the aws-alb-load-balancer controller. TLS
  * certificates for ALB Listeners can be automatically discovered with hostnames
  * from Ingress resources. The controller will attempt to discover TLS
- * certificates from the tls field in Ingress and host field in Ingress rules.
+ * certificates from the `tls` field in Ingress and `host` field in Ingress rules.
  * https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/cert_discovery/
  * */
 export default class RpcIngress extends pulumi.ComponentResource {

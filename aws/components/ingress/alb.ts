@@ -1,11 +1,38 @@
 import * as pulumi from "@pulumi/pulumi"
 import * as k8s from "@pulumi/kubernetes"
+import * as k8sInputTypes from "@pulumi/kubernetes/types/input"
 
-import { AlbIngressArgs, InternalAlbIngressArgs } from "./types"
+/** Describes the arguments for an ingress that will be exposed by an
+ * application load balancer. */
+export interface AlbIngressArgs {
+  metadata?: k8sInputTypes.meta.v1.ObjectMeta
+  /** Prevent pulumi erroring if ingress doesn't resolve immediately */
+  pulumiSkipAwait?: boolean
+  /** Defaults to "internet-facing".
+   * https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/#scheme
+   * */
+  albScheme?: string
+  /** https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/cert_discovery/#discover-via-ingress-rule-host */
+  host?: k8sInputTypes.networking.v1.IngressRule["host"]
+  /** https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/cert_discovery/#discover-via-ingress-tls */
+  tls?: k8sInputTypes.networking.v1.IngressTLS[]
+}
+
+/** Describes private internal args used by our ingress components to construct
+ * their custom configs. Example being our ingress component specifying its
+ * ingress backend service. The healthcheck args can be overwritten by a user
+ * specifying `metadata.annotations` */
+interface InternalAlbIngressArgs {
+  ingressServiceBackend: k8sInputTypes.networking.v1.IngressServiceBackend
+  /** https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/#healthcheck-path */
+  healthcheckPath: string
+  /** https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/#healthcheck-port */
+  healthcheckPort: string
+}
 
 /**
- * Determine that https should enabled based on if the user passed a hostname
- * for the ingress rule, passed a tls config, or set the alb certificate-arn
+ * Determine that https should enabled based on if the user passed a `hostname`
+ * for the ingress rule, passed a `tls` config, or set the alb `certificate-arn`
  * annotation.
  * https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/#ssl
  */
@@ -13,7 +40,9 @@ const shouldEnableHttps = (userInputArgs: AlbIngressArgs) =>
   userInputArgs.host ||
   userInputArgs?.tls?.length ||
   userInputArgs.metadata?.annotations?.[
-    "alb.ingress.kubernetes.io/certificate-arn" as keyof AlbIngressArgs["metadata"]["annotations"]
+    "alb.ingress.kubernetes.io/certificate-arn" as keyof pulumi.Input<
+      Record<string, string>
+    >
   ]
 
 const getAnnotations = (
@@ -40,7 +69,7 @@ const getAnnotations = (
 
   return {
     ...defaultAnnotations,
-    ...args.metadata.annotations,
+    ...args?.metadata?.annotations,
   }
 }
 
@@ -75,7 +104,7 @@ const getIngressPaths = (
 }
 
 /**
- * Function fills in nested objects in userInputArgs via pass by reference. It
+ * Function fills in nested objects in `userInputArgs` via pass by reference. It
  * does not deep copy the object.
  */
 export const fillInArgDefaults = (
@@ -83,12 +112,16 @@ export const fillInArgDefaults = (
   internalArgs: InternalAlbIngressArgs
 ): AlbIngressArgs => {
   const filledInArgs: AlbIngressArgs = {
+    metadata: { annotations: {} },
     ...userInputArgs,
     albScheme: userInputArgs.albScheme || "internet-facing",
     pulumiSkipAwait: userInputArgs.pulumiSkipAwait === false ? false : true,
   }
 
-  filledInArgs.metadata.annotations = getAnnotations(filledInArgs, internalArgs)
+  filledInArgs!.metadata!.annotations = getAnnotations(
+    filledInArgs,
+    internalArgs
+  )
 
   return filledInArgs
 }
