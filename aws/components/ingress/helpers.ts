@@ -1,17 +1,47 @@
 import * as pulumi from "@pulumi/pulumi"
 import * as k8s from "@pulumi/kubernetes"
+import merge from "ts-deepmerge"
+
 import * as k8sInputTypes from "@pulumi/kubernetes/types/input"
+import { PulumiSkipAwait } from "customTypes/pulumi"
 
 /** Describes the arguments for an ingress that will be exposed by an
- * application load balancer. */
+ * application load balancer.
+ *
+ * Configuring https for the ingress is determined based on if the user passed a
+ * `hostname` for the ingress rule, passed a `tls` config, or set the alb
+ * `certificate-arn` annotation.
+ * https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/#ssl
+ * */
 export interface AlbIngressArgs {
+  /** `metadata.annotations` defaults to:
+   * ```
+   * "kubernetes.io/ingress.class": "alb",
+   * "alb.ingress.kubernetes.io/scheme": args.loadBalancerScheme!,
+   * "alb.ingress.kubernetes.io/healthcheck-path": internalArgs.healthcheckPath,
+   * "alb.ingress.kubernetes.io/healthcheck-port": internalArgs.healthcheckPort,
+   * "alb.ingress.kubernetes.io/listen-ports": '[{"HTTP": 80}]',
+    // Prevent pulumi erroring if ingress doesn't resolve immediately
+    "pulumi.com/skipAwait": String(args.pulumiSkipAwait),
+    ```
+    If https will be enabled then also:
+    ```
+    * "alb.ingress.kubernetes.io/listen-ports": '[{"HTTP": 80}, {"HTTPS":443}]',
+    * "ingress.kubernetes.io/force-ssl-redirect": "true",
+    * "alb.ingress.kubernetes.io/actions.ssl-redirect":
+    *   '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS" "Port": "443", "StatusCode": "HTTP_301"}}',
+    * ```
+   */
   metadata?: k8sInputTypes.meta.v1.ObjectMeta
-  /** Prevent pulumi erroring if ingress doesn't resolve immediately */
-  pulumiSkipAwait?: boolean
+  /** Prevent pulumi from waiting for the ingress to resolve. Pulumi will error
+   * if it doesn't resolve immediately.
+   * https://www.pulumi.com/blog/improving-kubernetes-management-with-pulumis-await-logic/
+   * */
+  pulumiSkipAwait?: PulumiSkipAwait
   /** Defaults to "internet-facing".
    * https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/#scheme
    * */
-  albScheme?: string
+  loadBalancerScheme?: string
   /** https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/cert_discovery/#discover-via-ingress-rule-host */
   host?: k8sInputTypes.networking.v1.IngressRule["host"]
   /** https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/cert_discovery/#discover-via-ingress-tls */
@@ -51,7 +81,7 @@ const getAnnotations = (
 ) => {
   const defaultAnnotations: Record<string, string> = {
     "kubernetes.io/ingress.class": "alb",
-    "alb.ingress.kubernetes.io/scheme": args.albScheme!,
+    "alb.ingress.kubernetes.io/scheme": args.loadBalancerScheme!,
     "alb.ingress.kubernetes.io/healthcheck-path": internalArgs.healthcheckPath,
     "alb.ingress.kubernetes.io/healthcheck-port": internalArgs.healthcheckPort,
     "alb.ingress.kubernetes.io/listen-ports": '[{"HTTP": 80}]',
@@ -112,18 +142,13 @@ export const fillInArgDefaults = (
   internalArgs: InternalAlbIngressArgs
 ): AlbIngressArgs => {
   const filledInArgs: AlbIngressArgs = {
-    metadata: { annotations: {} },
     ...userInputArgs,
-    albScheme: userInputArgs.albScheme || "internet-facing",
+    loadBalancerScheme: userInputArgs.loadBalancerScheme || "internet-facing",
     pulumiSkipAwait: userInputArgs.pulumiSkipAwait === false ? false : true,
   }
 
-  filledInArgs!.metadata!.annotations = getAnnotations(
-    filledInArgs,
-    internalArgs
-  )
-
-  return filledInArgs
+  const annotations = getAnnotations(filledInArgs, internalArgs)
+  return merge(filledInArgs, { metadata: annotations })
 }
 
 export const getIngressResourceArgs = (

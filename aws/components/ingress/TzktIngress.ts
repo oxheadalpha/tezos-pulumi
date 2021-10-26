@@ -5,9 +5,9 @@ import {
   AlbIngressArgs,
   fillInArgDefaults,
   getIngressResourceArgs,
-} from "./alb"
+} from "./helpers"
 
-/** Create a Tzkt ingress to expose your Tzkt indexers' endpoint. A load
+/** Create a Tzkt ingress to expose your Tzkt indexers' endpoint. An application load
  * balancer will be created via the aws-alb-load-balancer controller. TLS
  * certificates for ALB Listeners can be automatically discovered with hostnames
  * from Ingress resources. The controller will attempt to discover TLS

@@ -5,9 +5,9 @@ import {
   AlbIngressArgs,
   fillInArgDefaults,
   getIngressResourceArgs,
-} from "./alb"
+} from "./helpers"
 
-/** Create an RPC ingress to expose your Tezos nodes' RPC endpoint. A load
+/** Create an RPC ingress to expose your Tezos nodes' RPC endpoint. An application load
  * balancer will be created via the aws-alb-load-balancer controller. TLS
  * certificates for ALB Listeners can be automatically discovered with hostnames
  * from Ingress resources. The controller will attempt to discover TLS
