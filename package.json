@@ -8,7 +8,7 @@
     "@pulumi/eks": "0.33.0",
     "@pulumi/pulumi": "3.11.0",
     "cron-parser": "3.5.0",
-    "deepmerge": "4.2.2",
+    "ts-deepmerge": "1.1.0",
     "yaml": "1.10.2"
   },
   "devDependencies": {

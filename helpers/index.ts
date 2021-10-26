@@ -1,7 +1,7 @@
 import { readFileSync } from "fs"
 import * as pulumi from "@pulumi/pulumi"
 import * as YAML from "yaml"
-import merge from "deepmerge"
+import merge from "ts-deepmerge"
 
 export const getEnvVar = (name: string): string => {
   const env = process.env[name]
@@ -17,10 +17,8 @@ export const parseYamlFile = (filePath: string) => {
   return YAML.parse(yamlFile)
 }
 
-const overwriteMerge = (destinationArray: [], sourceArray: [], options: any) =>
-  sourceArray
 export const mergeHelmValues = (valuesList: Array<object>) =>
-  merge.all(valuesList, { arrayMerge: overwriteMerge })
+  merge.withOptions({ mergeArrays: false }, ...valuesList)
 
 /**
  * Use to ignore properties when updating a resource.
