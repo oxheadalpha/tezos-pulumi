@@ -133,10 +133,6 @@ const getIngressPaths = (
   return paths
 }
 
-/**
- * Function fills in nested objects in `userInputArgs` via pass by reference. It
- * does not deep copy the object.
- */
 export const fillInArgDefaults = (
   userInputArgs: AlbIngressArgs,
   internalArgs: InternalAlbIngressArgs
