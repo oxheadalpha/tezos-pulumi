@@ -17,7 +17,7 @@ export const parseYamlFile = (filePath: string) => {
   return YAML.parse(yamlFile)
 }
 
-export const mergeHelmValues = (valuesList: Array<object>) =>
+export const mergeWithArrayOverrideOption = (valuesList: Array<object>) =>
   merge.withOptions({ mergeArrays: false }, ...valuesList)
 
 /**
