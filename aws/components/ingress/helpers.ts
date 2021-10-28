@@ -22,7 +22,7 @@ export interface AlbIngressArgs {
    * "alb.ingress.kubernetes.io/healthcheck-port": internalArgs.healthcheckPort,
    * "alb.ingress.kubernetes.io/listen-ports": '[{"HTTP": 80}]',
     // Prevent pulumi erroring if ingress doesn't resolve immediately
-    "pulumi.com/skipAwait": String(args.pulumiSkipAwait),
+    "pulumi.com/skipAwait": String(args.skipAwait),
     ```
     If https will be enabled then also:
     ```
@@ -37,7 +37,7 @@ export interface AlbIngressArgs {
    * if it doesn't resolve immediately.
    * https://www.pulumi.com/blog/improving-kubernetes-management-with-pulumis-await-logic/
    * */
-  pulumiSkipAwait?: PulumiSkipAwait
+  skipAwait?: PulumiSkipAwait
   /** Defaults to "internet-facing".
    * https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/#scheme
    * */
@@ -86,7 +86,7 @@ const getAnnotations = (
     "alb.ingress.kubernetes.io/healthcheck-port": internalArgs.healthcheckPort,
     "alb.ingress.kubernetes.io/listen-ports": '[{"HTTP": 80}]',
     // Prevent pulumi erroring if ingress doesn't resolve immediately
-    "pulumi.com/skipAwait": String(args.pulumiSkipAwait),
+    "pulumi.com/skipAwait": String(args.skipAwait),
   }
 
   if (shouldEnableHttps(args)) {
@@ -140,7 +140,7 @@ export const fillInArgDefaults = (
   const filledInArgs: AlbIngressArgs = {
     ...userInputArgs,
     loadBalancerScheme: userInputArgs.loadBalancerScheme || "internet-facing",
-    pulumiSkipAwait: userInputArgs.pulumiSkipAwait === false ? false : true,
+    skipAwait: userInputArgs.skipAwait === false ? false : true,
   }
 
   const annotations = getAnnotations(filledInArgs, internalArgs)
@@ -152,12 +152,12 @@ export const getIngressResourceArgs = (
   args: AlbIngressArgs,
   internalArgs: InternalAlbIngressArgs
 ): k8s.networking.v1.IngressArgs => {
-  if (args.pulumiSkipAwait) {
+  if (args.skipAwait) {
     pulumi.log.info(`
         ${name}: Pulumi will not wait for the ingress to be ready. This is because
         it has an external dependency on the AWS load balancer controller Helm chart and can't know
         when the controller is ready. Pulumi errors out if the ingress retries to resolve.
-        If you want, you can turn this setting of by setting the pulumiSkipAwait arg to false.`)
+        If you want, you can turn this setting of by setting the skipAwait arg to false.`)
   }
 
   const ingressPaths = getIngressPaths(args, internalArgs)

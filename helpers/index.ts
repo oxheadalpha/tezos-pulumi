@@ -3,6 +3,13 @@ import * as pulumi from "@pulumi/pulumi"
 import * as YAML from "yaml"
 import merge from "ts-deepmerge"
 
+ /**
+  * Checks if `value` is object-like. A value is object-like if it's not `null`
+  * and has a `typeof` result of "object".
+*/
+export const isObjectLike = (value: unknown) =>
+  value !== null && typeof value === "object"
+
 export const getEnvVar = (name: string): string => {
   const env = process.env[name]
   if (!env) {
@@ -11,10 +18,22 @@ export const getEnvVar = (name: string): string => {
   return env
 }
 
-export const parseYamlFile = (filePath: string) => {
-  const yamlFile = readFileSync(filePath, "utf8")
-  console.log("DFDSF", YAML.parse(yamlFile), typeof YAML.parse(yamlFile))
-  return YAML.parse(yamlFile)
+export const parseYamlFile = (
+  filePath: string,
+  options: YAML.Options = { schema: "json" }
+) => {
+  try {
+    const yamlFile = readFileSync(filePath, "utf8")
+    return YAML.parse(yamlFile, options)
+  } catch (e) {
+    if (e instanceof Error) {
+      throw new pulumi.ResourceError(
+        `Failed to parse ${filePath}: ${e.stack}`,
+        this
+      )
+    }
+    throw e
+  }
 }
 
 export const mergeWithArrayOverrideOption = (valuesList: Array<object>) =>

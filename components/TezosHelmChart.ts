@@ -4,9 +4,11 @@ import * as eks from "@pulumi/eks"
 
 import { ChartOpts, LocalChartOpts } from "@pulumi/kubernetes/helm/v3"
 
-import { mergeHelmValues, parseYamlFile } from "helpers"
-import { dir } from "console"
-
+import {
+  isObjectLike,
+  mergeWithArrayOverrideOption,
+  parseYamlFile,
+} from "helpers"
 interface TezosHelmChartArgs {
   /** tezos-k8s Helm chart values https://github.com/oxheadalpha/tezos-k8s */
   values?: pulumi.Inputs
@@ -28,18 +30,23 @@ interface TezosHelmChartArgs {
   releaseName: string
 }
 
-export default class TezosHelmChart extends pulumi.ComponentResource {
+export default class TezosK8sHelmChart extends pulumi.ComponentResource {
   readonly args: TezosHelmChartArgs
   /** The values passed to the tezos-k8s Helm chart */
-  values: object
+  readonly values: object
 
   constructor(args: TezosHelmChartArgs, opts: pulumi.ComponentResourceOptions) {
-    super("tezos:tezos-helm-chart:TezosHelmChart", "tezos-helm-chart", {}, opts)
+    super(
+      "tezos:tezos-k8s-helm-chart:TezosK8sHelmChart",
+      "tezos-k8s-helm-chart",
+      {},
+      opts
+    )
     this.args = args
 
-    console.dir(this.getValuesFromFiles(), { depth: 9 })
-    this.values = mergeHelmValues([
-      ...this.getValuesFromFiles(),
+    console.dir(this.parseYamlFiles(), { depth: 9 })
+    this.values = mergeWithArrayOverrideOption([
+      ...this.parseYamlFiles(),
       args.values || {},
     ])
     console.dir(this.values, { depth: 8 })
@@ -76,24 +83,25 @@ export default class TezosHelmChart extends pulumi.ComponentResource {
     )
   }
 
-  getValuesFromFiles() {
-    const { valuesFiles } = this.args
-
-    if (typeof valuesFiles === "string") {
+  private validateParsedYaml(fileName: string, yaml: any) {
+    if (isObjectLike(yaml)) {
+      return true
     }
+    throw new pulumi.ResourceError(
+      `Invalid yaml document ${fileName}: The document must be parsable as a JSON object.`,
+      this
+    )
+  }
 
-    if (Array.isArray(valuesFiles)) {
-      return valuesFiles.reduce((previousVal: object[], file: string) => {
-        const yaml = parseYamlFile(file)
-        if (!yaml) {
-          throw Error(`values file ${file} does not contain data`)
-        }
-        return [...previousVal, parseYamlFile(file)]
-      }, []) //.filter(v => !!v)
-    } else if (typeof valuesFiles === "string") {
-      return [parseYamlFile(valuesFiles)]
-    }
-    return []
+  private parseYamlFiles() {
+    const { valuesFiles = [] } = this.args
+    const valuesFilesList = Array.isArray(valuesFiles)
+      ? valuesFiles
+      : [valuesFiles]
+
+    return valuesFilesList
+      .map((file) => ({ file, yaml: parseYamlFile(file) }))
+      .filter(({ file, yaml }) => this.validateParsedYaml(file, yaml))
   }
 }
 

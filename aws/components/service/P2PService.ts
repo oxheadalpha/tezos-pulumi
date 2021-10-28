@@ -4,8 +4,7 @@ import merge from "ts-deepmerge"
 import { mergeWithArrayOverrideOption } from "helpers"
 
 import * as k8sInputTypes from "@pulumi/kubernetes/types/input"
-import { PulumiSkipAwait } from "customTypes/pulumi"
-import { AugmentedRequired } from "customTypes/utils"
+import { AugmentedRequired, PulumiSkipAwait } from "customTypes"
 
 /** Make `spec.selector` required. User must select labels of pods to forward
  * traffic to. */
@@ -26,7 +25,7 @@ export interface NlbServiceArgs {
    *  "external-dns.alpha.kubernetes.io/hostname":
    *    args.hostname || "",
    *  "pulumi.com/skipAwait":
-   *    args.pulumiSkipAwait === false ? "false" : "true",
+   *    args.skipAwait === false ? "false" : "true",
     ```
    */
   metadata?: k8sInputTypes.meta.v1.ObjectMeta
@@ -43,7 +42,7 @@ export interface NlbServiceArgs {
    * ready. This is useful for when starting up a Tezos node that will take time
    * to sync with the head of the chain. The node's pod will not be marked ready
    * until then. Defaults to true. */
-  pulumiSkipAwait?: PulumiSkipAwait
+  skipAwait?: PulumiSkipAwait
   /** Defaults to "internet-facing".
    * https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#lb-scheme
    * */
@@ -87,8 +86,7 @@ export class P2PService extends pulumi.ComponentResource {
           "service.beta.kubernetes.io/aws-load-balancer-scheme":
             args.loadBalancerScheme || "internet-facing",
           "external-dns.alpha.kubernetes.io/hostname": args.hostname || "",
-          "pulumi.com/skipAwait":
-            args.pulumiSkipAwait === false ? "false" : "true",
+          "pulumi.com/skipAwait": args.skipAwait === false ? "false" : "true",
         },
       },
       args.metadata || {}
