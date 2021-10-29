@@ -81,9 +81,12 @@ export class TezosK8sHelmChart extends pulumi.ComponentResource {
       },
     ]) as ChartOpts | LocalChartOpts
 
-    if (!implementsLocalChartOpts(this.config)) {
-      this.config.chart = "tezos-chain"
-      this.config.fetchOpts = {
+    if (!implementsLocalChartOpts(filledInConfig)) {
+      // The `chart` and `fetchOpts` props can't be set on `filledInConfig`
+      // unless it is casted to `ChartOpts`.
+      const configAsChartOpts = filledInConfig as ChartOpts
+      configAsChartOpts.chart = "tezos-chain"
+      configAsChartOpts.fetchOpts = {
         repo: "https://oxheadalpha.github.io/tezos-helm-charts/",
       }
     }
