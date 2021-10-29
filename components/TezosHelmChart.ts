@@ -1,91 +1,102 @@
 import * as pulumi from "@pulumi/pulumi"
 import * as k8s from "@pulumi/kubernetes"
-import * as eks from "@pulumi/eks"
-
-import { ChartOpts, LocalChartOpts } from "@pulumi/kubernetes/helm/v3"
 
 import {
   isObjectLike,
   mergeWithArrayOverrideOption,
   parseYamlFile,
 } from "helpers"
-interface TezosHelmChartArgs {
-  /** tezos-k8s Helm chart values https://github.com/oxheadalpha/tezos-k8s */
-  values?: pulumi.Inputs
+
+import { ChartOpts, LocalChartOpts } from "@pulumi/kubernetes/helm/v3"
+import { MergeExclusive } from "customTypes"
+
+/** We hardcode the chart's `config` properties `chart` and `fetchOpts` to install the `tezos-k8s` chart */
+type CustomChartOpts = Omit<ChartOpts, "chart" | "fetchOpts">
+/** Make that user can't specify both ChartOpts and LocalChartOpts */
+type CustomChartConfig = MergeExclusive<CustomChartOpts, LocalChartOpts>
+/** Describes the Helm chart config */
+export type TezosK8sHelmChartConfig = CustomChartConfig & {
   /**
    * Path to a tezos-k8s Helm chart values file(s). File precedence goes from
-   * right to left. Values will be overridden by the values property.
+   * right to left. Values will be overridden by the `values` property.
    */
-  valuesFiles?: string | []
-  /** Helm chart version */
-  version?: string
-  /**
-   * The path to the chart directory which contains the `Chart.yaml` file. If
-   * specified, the version argument will be ignored.
-   */
-  localChartPath?: string
-  /** Namespace to deploy the chart in */
-  namespace: string
-  /** Name of the Helm release */
-  releaseName: string
+  valuesFiles?: string | string[]
 }
 
-export default class TezosK8sHelmChart extends pulumi.ComponentResource {
-  readonly args: TezosHelmChartArgs
-  /** The values passed to the tezos-k8s Helm chart */
-  readonly values: object
+/** Determine if the `config` is implementing `LocalChartOpts` */
+const implementsLocalChartOpts = (
+  config: CustomChartConfig
+): config is LocalChartOpts => Reflect.has(config, "path")
 
-  constructor(args: TezosHelmChartArgs, opts: pulumi.ComponentResourceOptions) {
-    super(
-      "tezos:tezos-k8s-helm-chart:TezosK8sHelmChart",
-      "tezos-k8s-helm-chart",
-      {},
-      opts
-    )
-    this.args = args
+/**
+ * Deploy a `tezos-k8s` Helm chart. By default the remote latest chart is pulled
+ * from the chart repo https://oxheadalpha.github.io/tezos-helm-charts. You may
+ * specify a chart `version`. A `path` of a local Helm chart may be specified
+ * instead of fetching the remote chart. These options are mutually exclusive.
+ *
+ * Values in the `values.yaml` file can be overridden using the `values` field
+ * (equivalent to using Helm's `--set)`. You can also specify the paths of local
+ * values.yaml files via the `valuesFiles` field.
+ *
+ * The instance of the Helm chart will have a `config` property that will have
+ * filled in any default values for the `config` arg.
+ * - `namespace` for chart resources will default to the `releaseName`
+ * - `skipAwait` defaults to `true`
+ */
+export class TezosK8sHelmChart extends pulumi.ComponentResource {
+  readonly config: ChartOpts | LocalChartOpts
 
-    console.dir(this.parseYamlFiles(), { depth: 9 })
-    this.values = mergeWithArrayOverrideOption([
-      ...this.parseYamlFiles(),
-      args.values || {},
+  /**
+   * Create an instance of the specified Helm chart.
+   * @param releaseName The _unique_ name of the Helm chart.
+   * @param config Configuration options for the Chart.
+   * @param opts A bag of options that control this resource's behavior.
+   */
+  constructor(
+    releaseName: string,
+    config: TezosK8sHelmChartConfig,
+    opts?: pulumi.ComponentResourceOptions
+  ) {
+    super("tezos:tezos-k8s-helm-chart:TezosK8sHelmChart", releaseName, {}, opts)
+
+    const {
+      namespace = releaseName,
+      skipAwait = true,
+      values = {},
+      valuesFiles = [],
+      ...rest
+    } = config
+    const mergedValues = mergeWithArrayOverrideOption([
+      ...this.parseYamlFiles(valuesFiles),
+      values,
     ])
-    console.dir(this.values, { depth: 8 })
-    const chartOpts: Record<string, any> = {
-      namespace: args.namespace,
-      values: this.values,
-      path: args.localChartPath,
-    }
 
-    if (!args.localChartPath) {
-      chartOpts.chart = "tezos-chain"
-      chartOpts.version = args.version || "5.2.0"
-      chartOpts.fetchOpts = {
+    const filledInConfig = mergeWithArrayOverrideOption([
+      rest,
+      {
+        namespace,
+        skipAwait,
+        values: mergedValues,
+      },
+    ]) as ChartOpts | LocalChartOpts
+
+    if (!implementsLocalChartOpts(this.config)) {
+      this.config.chart = "tezos-chain"
+      this.config.fetchOpts = {
         repo: "https://oxheadalpha.github.io/tezos-helm-charts/",
       }
     }
-    // WHAT IF THERE IS LOCAL CHAT PATh
 
-    new k8s.helm.v3.Chart(
-      args.releaseName,
-      // {
-      // namespace: args.namespace,
-      // values: mergeHelmValues([values, {indexers: {tzkt: {api_image: "hello"}}}]),
-      // chart: "tezos-chain",
-      // fetchOpts: {
-      //   repo: "https://oxheadalpha.github.io/tezos-helm-charts/",
-      // },
-      // version: args.version || "5.2.0",
-      // },
-      { ...(chartOpts as ChartOpts | LocalChartOpts), skipAwait: true },
-      {
-        parent: this,
-      }
-    )
+    this.config = filledInConfig
+
+    new k8s.helm.v3.Chart(releaseName, this.config, {
+      parent: this,
+    })
   }
 
-  private validateParsedYaml(fileName: string, yaml: any) {
+  private validateParsedYaml(fileName: string, yaml: any): object {
     if (isObjectLike(yaml)) {
-      return true
+      return yaml
     }
     throw new pulumi.ResourceError(
       `Invalid yaml document ${fileName}: The document must be parsable as a JSON object.`,
@@ -93,34 +104,17 @@ export default class TezosK8sHelmChart extends pulumi.ComponentResource {
     )
   }
 
-  private parseYamlFiles() {
-    const { valuesFiles = [] } = this.args
-    const valuesFilesList = Array.isArray(valuesFiles)
+  private parseYamlFiles(valuesFiles: string | string[]): object[] {
+    const valuesFilesList: string[] = Array.isArray(valuesFiles)
       ? valuesFiles
       : [valuesFiles]
 
-    return valuesFilesList
-      .map((file) => ({ file, yaml: parseYamlFile(file) }))
-      .filter(({ file, yaml }) => this.validateParsedYaml(file, yaml))
+    return valuesFilesList.reduce((yaml: object[], file: string) => {
+      const parsedYaml = parseYamlFile(file)
+      if (this.validateParsedYaml(file, parsedYaml)) {
+        return [...yaml, parsedYaml]
+      }
+      return yaml
+    }, [])
   }
 }
-
-// create vpc
-// create cluster
-//   nodes in regions?
-// deploy tezosk8s
-//   nodes
-//   indexer
-//   signers
-
-//     node / volume affinity?
-// deploy alb controller  (should increase its internal timeout for when its pods move nodes)
-// deploy external dns
-// create certificates
-//   certvalidation
-// create faucet ?
-// create ingresses
-//   rpc
-//   p2p
-//   indexer
-//   faucet?

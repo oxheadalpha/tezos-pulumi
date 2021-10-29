@@ -3,10 +3,10 @@ import * as pulumi from "@pulumi/pulumi"
 import * as YAML from "yaml"
 import merge from "ts-deepmerge"
 
- /**
-  * Checks if `value` is object-like. A value is object-like if it's not `null`
-  * and has a `typeof` result of "object".
-*/
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ */
 export const isObjectLike = (value: unknown) =>
   value !== null && typeof value === "object"
 
