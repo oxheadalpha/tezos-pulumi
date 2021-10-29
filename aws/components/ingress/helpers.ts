@@ -155,9 +155,11 @@ export const getIngressResourceArgs = (
   if (args.skipAwait) {
     pulumi.log.info(`
         ${name}: Pulumi will not wait for the ingress to be ready. This is because
-        it has an external dependency on the AWS load balancer controller Helm chart and can't know
-        when the controller is ready. Pulumi errors out if the ingress retries to resolve.
-        If you want, you can turn this setting of by setting the skipAwait arg to false.`)
+        it has a dependency on the AWS load balancer controller Helm chart and
+        Pulumi can't know precisely when the controller is ready. Pulumi will error
+        out if the ingress fails to resolve immediately. You can let Pulumi wait
+        by setting the "skipAwait" arg to false.
+    `)
   }
 
   const ingressPaths = getIngressPaths(args, internalArgs)
