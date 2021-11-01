@@ -18,18 +18,23 @@ export const getEnvVar = (name: string): string => {
   return env
 }
 
-export const parseYamlFile = (
-  filePath: string,
-  options: YAML.Options = { schema: "json" }
-) => {
+export const parseYamlFile = ({
+  file,
+  resource,
+  options
+}: {
+  file: string
+  resource?: pulumi.Resource
+  options?: YAML.Options
+}) => {
   try {
-    const yamlFile = readFileSync(filePath, "utf8")
+    const yamlFile = readFileSync(file, "utf8")
     return YAML.parse(yamlFile, options)
   } catch (e) {
     if (e instanceof Error) {
       throw new pulumi.ResourceError(
-        `Failed to parse ${filePath}: ${e.stack}`,
-        this
+        `Failed to parse ${file}: ${e.stack}`,
+        resource
       )
     }
     throw e

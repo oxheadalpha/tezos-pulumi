@@ -114,7 +114,7 @@ export class TezosK8sHelmChart extends pulumi.ComponentResource {
       : [valuesFiles]
 
     return valuesFilesList.reduce((yaml: object[], file: string) => {
-      const parsedYaml = parseYamlFile(file)
+      const parsedYaml = parseYamlFile({ file, resource: this })
       if (this.validateParsedYaml(file, parsedYaml)) {
         return [...yaml, parsedYaml]
       }
