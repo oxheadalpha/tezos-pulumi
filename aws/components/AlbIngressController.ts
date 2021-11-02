@@ -4,6 +4,8 @@ import * as k8s from "@pulumi/kubernetes"
 
 import { ignoreChangesTransformation } from "helpers"
 
+import { RolePolicyAttachmentArgs } from "@pulumi/aws/iam/rolePolicyAttachment"
+
 /**
 ALB ingresses need to set their `dependsOn` field to `awsALBController`. This is
 bec on cluster creation, there is apparently a race condition between the alb
@@ -13,7 +15,7 @@ ingresses will fail to be created if the pods are not in "Running" state.
 
 interface AlbIngressControllerArgs {
   /** The IAM role to attach the alb-ingress-controller policy to */
-  iamRole: aws.iam.Role
+  iamRole: RolePolicyAttachmentArgs["role"]
   /**
    * Options for the alb controller Helm chart
    * https://artifacthub.io/packages/helm/aws/aws-load-balancer-controller#configuration).
@@ -21,10 +23,10 @@ interface AlbIngressControllerArgs {
    * are configurable fields of AlbIngressControllerArgs. Such as `clusterName`.
    */
   values?: pulumi.Inputs
-  /** Helm chart version */
+  /** ALB controller Helm chart version */
   version?: string
   /** The name of the cluster. This is required by the alb controller chart. */
-  clusterName: string
+  clusterName: pulumi.Input<string>
   /** Namespace to deploy the chart in. Defaults to kube-system. */
   namespace?: string
 
@@ -36,7 +38,7 @@ export default class AlbIngressController extends pulumi.ComponentResource {
 
   constructor(
     args: AlbIngressControllerArgs,
-    opts: pulumi.ComponentResourceOptions
+    opts?: pulumi.ComponentResourceOptions
   ) {
     super(
       "tezos-aws:alb-ingress-controller:AlbIngressController",

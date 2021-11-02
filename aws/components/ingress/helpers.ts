@@ -154,11 +154,10 @@ export const getIngressResourceArgs = (
 ): k8s.networking.v1.IngressArgs => {
   if (args.skipAwait) {
     pulumi.log.info(`
-        ${name}: Pulumi will not wait for the ingress to be ready. This is because
-        it has a dependency on the AWS load balancer controller Helm chart and
-        Pulumi can't know precisely when the controller is ready. Pulumi will error
-        out if the ingress fails to resolve immediately. You can let Pulumi wait
-        by setting the "skipAwait" arg to false.
+    ${name}: Pulumi will not wait for the ingress to be ready. This is because
+    it has a dependency on the AWS load balancer controller Helm chart and Pulumi can't know
+    precisely when the controller is ready. Pulumi will error out if the ingress fails to
+    resolve immediately. You can let Pulumi wait by setting the "skipAwait" arg to false.
     `)
   }
 

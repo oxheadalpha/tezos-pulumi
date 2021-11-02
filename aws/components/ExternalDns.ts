@@ -2,12 +2,14 @@ import * as aws from "@pulumi/aws"
 import * as k8s from "@pulumi/kubernetes"
 import * as pulumi from "@pulumi/pulumi"
 
+import { RolePolicyAttachmentArgs } from "@pulumi/aws/iam/rolePolicyAttachment"
+
 /**
  * Arguments for the ExternalDns component
  */
 interface ExternalDnsArgs {
   /** The IAM role to attach the external-dns policy to */
-  iamRole: aws.iam.Role
+  iamRole: RolePolicyAttachmentArgs["role"]
   /**
    * Values for the external-dns Helm chart
    * https://artifacthub.io/packages/helm/bitnami/external-dns#parameters.
@@ -21,7 +23,7 @@ interface ExternalDnsArgs {
    * records that it is not an owner of in the hosted zone(s). You may use your
    * cluster id. If you have multiple clusters, each cluster should have its own
    * id. */
-  txtOwnerId?: string
+  txtOwnerId: pulumi.Input<string | null>
   /** List of hosted zone id's. Used for external-dns policy Action
    * "route53:ChangeResourceRecordSets", and as the "zoneIdFilters" value for
    * the external-dns Helm chart. Defaults to "hostedzone/*".
@@ -41,7 +43,7 @@ interface ExternalDnsArgs {
 export default class ExteranlDns extends pulumi.ComponentResource {
   readonly args: ExternalDnsArgs
 
-  constructor(args: ExternalDnsArgs, opts: pulumi.ComponentResourceOptions) {
+  constructor(args: ExternalDnsArgs, opts?: pulumi.ComponentResourceOptions) {
     super("aws:external-dns:ExternalDns", "external-dns", {}, opts)
     this.args = args
 
