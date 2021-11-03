@@ -53,13 +53,13 @@ export interface NlbServiceArgs {
   hostname?: pulumi.Input<string>
 }
 
-/** Create a P2P service to expose your Tezos nodes' P2P endpoint. A network
+/** Create a `P2PService` to expose your Tezos nodes' P2P endpoint. A network
  * load balancer will be created via the aws-alb-load-balancer controller. The
  * default port of the service is 9732.
  * https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/nlb/
  * */
 export class P2PService extends pulumi.ComponentResource {
-  /** args with filled in default values */
+  /** `args` with filled in default values */
   readonly args: NlbServiceArgs
   /** The p2p service */
   readonly service: k8s.core.v1.Service

@@ -109,7 +109,7 @@ const getIngressPaths = (
 ): k8s.types.input.networking.v1.HTTPIngressPath[] => {
   const paths = [
     {
-      path: "/*",
+      path: "/",
       pathType: "Prefix",
       backend: {
         service: internalArgs.ingressServiceBackend,
@@ -119,7 +119,7 @@ const getIngressPaths = (
 
   if (shouldEnableHttps(args)) {
     paths.unshift({
-      path: "/*",
+      path: "/",
       pathType: "Prefix",
       backend: {
         service: {
@@ -144,7 +144,7 @@ export const fillInArgDefaults = (
   }
 
   const annotations = getAnnotations(filledInArgs, internalArgs)
-  return merge(filledInArgs, { metadata: annotations })
+  return merge(filledInArgs, { metadata: { annotations } })
 }
 
 export const getIngressResourceArgs = (

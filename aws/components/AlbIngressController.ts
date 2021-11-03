@@ -6,16 +6,14 @@ import { ignoreChangesTransformation } from "helpers"
 
 import { RolePolicyAttachmentArgs } from "@pulumi/aws/iam/rolePolicyAttachment"
 
-/**
-ALB ingresses need to set their `dependsOn` field to `awsALBController`. This is
-bec on cluster creation, there is apparently a race condition between the alb
-controller pods being in a Running state and the ingresses being created. The
-ingresses will fail to be created if the pods are not in "Running" state.
-*/
-
+/** Arguments for the `AlbIngressController` component */
 interface AlbIngressControllerArgs {
+  /** The name of the cluster. This is required by the alb controller chart. */
+  clusterName: pulumi.Input<string>
   /** The IAM role to attach the alb-ingress-controller policy to */
   iamRole: RolePolicyAttachmentArgs["role"]
+  /** Namespace to deploy the chart in. Defaults to kube-system. */
+  namespace?: string
   /**
    * Options for the alb controller Helm chart
    * https://artifacthub.io/packages/helm/aws/aws-load-balancer-controller#configuration).
@@ -25,15 +23,12 @@ interface AlbIngressControllerArgs {
   values?: pulumi.Inputs
   /** ALB controller Helm chart version */
   version?: string
-  /** The name of the cluster. This is required by the alb controller chart. */
-  clusterName: pulumi.Input<string>
-  /** Namespace to deploy the chart in. Defaults to kube-system. */
-  namespace?: string
 
   // skipAwait?: boolean
 }
 
 export default class AlbIngressController extends pulumi.ComponentResource {
+  /** `args` with filled in default values */
   readonly args: AlbIngressControllerArgs
 
   constructor(
@@ -46,14 +41,29 @@ export default class AlbIngressController extends pulumi.ComponentResource {
       {},
       opts
     )
-    this.args = args
+
+    this.args = {
+      ...args,
+      namespace: args.namespace || "kube-system",
+      version: args.version || "1.3.2",
+      values: {
+        clusterName: args.clusterName,
+        replicaCount: 2,
+        // livenessProbe: {
+        //   // So pulumi doesn't error while cluster nodes change
+        //   timeoutSeconds: 50,
+        //   failureThreshold: 4
+        // },
+        ...args.values,
+      },
+    }
 
     const ingressControllerPolicy = this.createPolicy()
     new aws.iam.RolePolicyAttachment(
       "alb-ingress-controller",
       {
         policyArn: ingressControllerPolicy.arn,
-        role: args.iamRole,
+        role: this.args.iamRole,
       },
       { parent: this }
     )
@@ -62,24 +72,15 @@ export default class AlbIngressController extends pulumi.ComponentResource {
       `aws-load-balancer-controller transformation: Will ignore changes to TLS certificate on subsequent pulumi ups.`
     )
     new k8s.helm.v3.Chart(
-      "alb-ingress-controller",
+      "aws-load-balancer-controller",
       {
         chart: "aws-load-balancer-controller",
-        namespace: args.namespace || "kube-system",
-        version: args.version || "1.2.7",
+        namespace: this.args.namespace,
+        version: this.args.version,
         fetchOpts: {
           repo: "https://aws.github.io/eks-charts",
         },
-        values: {
-          clusterName: args.clusterName,
-          replicaCount: 2,
-          // livenessProbe: {
-          //   // So pulumi doesn't error while
-          //   timeoutSeconds: 50,
-          //   failureThreshold: 4
-          // },
-          ...args.values,
-        },
+        values: this.args.values,
       },
       {
         parent: this,
@@ -93,7 +94,8 @@ export default class AlbIngressController extends pulumi.ComponentResource {
           (chartResource) => {
             if (
               chartResource.type === "kubernetes:core/v1:Secret" &&
-              chartResource.name === `${args.namespace}/aws-load-balancer-tls`
+              chartResource.name ===
+                `${this.args.namespace}/aws-load-balancer-tls`
             ) {
               return ignoreChangesTransformation(chartResource, ["data"])
             } else if (

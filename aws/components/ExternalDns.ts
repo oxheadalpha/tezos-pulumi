@@ -5,11 +5,18 @@ import * as pulumi from "@pulumi/pulumi"
 import { RolePolicyAttachmentArgs } from "@pulumi/aws/iam/rolePolicyAttachment"
 
 /**
- * Arguments for the ExternalDns component
+ * Arguments for the `ExternalDns` component
  */
 interface ExternalDnsArgs {
-  /** The IAM role to attach the external-dns policy to */
+  /** The IAM role to attach the external-dns policy to. */
   iamRole: RolePolicyAttachmentArgs["role"]
+  /** Namespace to deploy the chart in. Defaults to kube-system. */
+  namespace?: string
+  /** A unique id that restricts the external-dns instance from syncing any
+   * records that it is not an owner of in the hosted zone(s). You may use your
+   * cluster id. If you have multiple clusters, each cluster should have its own
+   * id. */
+  txtOwnerId: pulumi.Input<string | null>
   /**
    * Values for the external-dns Helm chart
    * https://artifacthub.io/packages/helm/bitnami/external-dns#parameters.
@@ -19,18 +26,11 @@ interface ExternalDnsArgs {
   values?: pulumi.Inputs
   /** Helm chart version */
   version?: string
-  /** A unique id that restricts the external-dns instance from syncing any
-   * records that it is not an owner of in the hosted zone(s). You may use your
-   * cluster id. If you have multiple clusters, each cluster should have its own
-   * id. */
-  txtOwnerId: pulumi.Input<string | null>
   /** List of hosted zone id's. Used for external-dns policy Action
    * "route53:ChangeResourceRecordSets", and as the "zoneIdFilters" value for
    * the external-dns Helm chart. Defaults to "hostedzone/*".
    */
   zoneIdFilters?: pulumi.Input<string>[]
-  /** Namespace to deploy the chart in. Defaults to kube-system */
-  namespace?: string
 
   // skipAwait?: boolean
 }
@@ -41,18 +41,37 @@ interface ExternalDnsArgs {
  * Helm chart:  https://artifacthub.io/packages/helm/bitnami/external-dns
  */
 export default class ExteranlDns extends pulumi.ComponentResource {
+  /** `args` with filled in default values */
   readonly args: ExternalDnsArgs
 
   constructor(args: ExternalDnsArgs, opts?: pulumi.ComponentResourceOptions) {
     super("aws:external-dns:ExternalDns", "external-dns", {}, opts)
-    this.args = args
 
-    const hostedZoneResources: pulumi.Output<string>[] =
-      args.zoneIdFilters?.map(
+    this.args = {
+      ...args,
+      namespace: args.namespace || "kube-system",
+      version: args.version || "5.4.15",
+      values: {
+        replicas: 2,
+        txtOwnerId: args.txtOwnerId,
+        // Delete route53 records after an ingress or its hosts are deleted.
+        policy: "sync",
+        // Limit possible target zones by zone id.
+        zoneIdFilters: args.zoneIdFilters,
+        aws: {
+          zoneType: "public",
+        },
+        ...args.values,
+      },
+    }
+
+    const hostedZoneResources: pulumi.Input<pulumi.Input<string>[]> =
+      this.args.zoneIdFilters?.map(
         (zoneId) => pulumi.interpolate`arn:aws:route53:::${zoneId}`
       ) || []
+
     if (!hostedZoneResources?.length) {
-      hostedZoneResources.push(pulumi.output("hostedzone/*"))
+      hostedZoneResources.push(`arn:aws:route53:::hostedzone/*`)
     }
 
     const externalDnsPolicy = new aws.iam.Policy(
@@ -86,7 +105,7 @@ export default class ExteranlDns extends pulumi.ComponentResource {
       "external-dns",
       {
         policyArn: externalDnsPolicy.arn,
-        role: args.iamRole,
+        role: this.args.iamRole,
       },
       { parent: this }
     )
@@ -95,24 +114,12 @@ export default class ExteranlDns extends pulumi.ComponentResource {
       "external-dns",
       {
         chart: "external-dns",
-        namespace: args.namespace || "kube-system",
-        version: args.version || "5.4.10",
+        namespace: this.args.namespace,
+        version: this.args.version,
         fetchOpts: {
           repo: "https://charts.bitnami.com/bitnami",
         },
-        values: {
-          replicas: 2,
-          txtOwnerId: args.txtOwnerId,
-          // Delete route53 records after an ingress or its hosts are deleted.
-          policy: "sync",
-          // Limit possible target zones by zone id.
-          zoneIdFilters: args.zoneIdFilters,
-          aws: {
-            zoneType: "public",
-          },
-
-          ...args.values,
-        },
+        values: this.args.values,
       },
       { parent: this }
     )
