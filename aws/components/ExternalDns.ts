@@ -67,7 +67,7 @@ export default class ExteranlDns extends pulumi.ComponentResource {
 
     const hostedZoneResources: pulumi.Input<pulumi.Input<string>[]> =
       this.args.zoneIdFilters?.map(
-        (zoneId) => pulumi.interpolate`arn:aws:route53:::${zoneId}`
+        (zoneId) => pulumi.interpolate`arn:aws:route53:::hostedzone/${zoneId}`
       ) || []
 
     if (!hostedZoneResources?.length) {
