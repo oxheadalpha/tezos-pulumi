@@ -33,8 +33,9 @@ export interface AlbIngressArgs {
     * ```
    */
   metadata?: k8sInputTypes.meta.v1.ObjectMeta
-  /** Prevent pulumi from waiting for the ingress to resolve. Pulumi will error
-   * if it doesn't resolve immediately.
+  /** Prevent pulumi from waiting for the ingress to be marked as ready. If
+   * pulumi waits for the ingress and it fails to resolve on its first attempt,
+   * Pulumi will error out. Defaults to `true`.
    * https://www.pulumi.com/blog/improving-kubernetes-management-with-pulumis-await-logic/
    * */
   skipAwait?: PulumiSkipAwait

@@ -38,10 +38,15 @@ export interface NlbServiceArgs {
    * configure which pods to forward traffic to.
    */
   spec: CustomeServiceSpec
-  /** Prevent pulumi from timing out waiting for the resource to be marked as
-   * ready. This is useful for when starting up a Tezos node that will take time
-   * to sync with the head of the chain. The node's pod will not be marked ready
-   * until then. Defaults to true. */
+  /** Prevent pulumi from waiting for the resource to be marked as ready. This
+   * is useful as an example, for when starting up a Tezos node that needs to do
+   * a lot of catchup with the head of the chain. The node's pod will not be
+   * marked "ready" until then. Pulumi will timeout waiting for the resources and
+   * may block other resources from being created. Defaults to `true`.
+   *
+   * See:
+   * https://www.pulumi.com/registry/packages/kubernetes/api-docs/core/v1/service/
+   * */
   skipAwait?: PulumiSkipAwait
   /** Defaults to "internet-facing".
    * https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#lb-scheme

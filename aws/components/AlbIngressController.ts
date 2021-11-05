@@ -8,25 +8,34 @@ import { RolePolicyAttachmentArgs } from "@pulumi/aws/iam/rolePolicyAttachment"
 
 /** Arguments for the `AlbIngressController` component */
 interface AlbIngressControllerArgs {
-  /** The name of the cluster. This is required by the alb controller chart. */
+  /**
+   * K8s cluster name which is a required field of the ALB Helm chart `values`.
+   */
   clusterName: pulumi.Input<string>
-  /** The IAM role to attach the alb-ingress-controller policy to */
+  /** The IAM role to attach the ALB controller policy to. This policy is
+   * created by the `AlbIngressController`. */
   iamRole: RolePolicyAttachmentArgs["role"]
-  /** Namespace to deploy the chart in. Defaults to kube-system. */
+  /** Namespace to deploy the chart in. Defaults to `kube-system`. */
   namespace?: string
   /**
-   * Options for the alb controller Helm chart
-   * https://artifacthub.io/packages/helm/aws/aws-load-balancer-controller#configuration).
-   * Setting chart `values` here will override any other other chart values that
-   * are configurable fields of AlbIngressControllerArgs. Such as `clusterName`.
+   * `values` for the ALB controller Helm chart
+   * https://artifacthub.io/packages/helm/aws/aws-load-balancer-controller#configuration.
    */
   values?: pulumi.Inputs
-  /** ALB controller Helm chart version */
+  /** ALB controller Helm chart `version` */
   version?: string
-
-  // skipAwait?: boolean
 }
 
+/**
+ * Deploy the aws-load-balancer-controller Helm chart including the necesssary
+ * IAM policy.
+ *
+ * Chart repo:
+ * https://github.com/aws/eks-charts/blob/master/stable/aws-load-balancer-controller/README.md
+ *
+ * Helm chart:
+ * https://artifacthub.io/packages/helm/aws/aws-load-balancer-controller
+ */
 export default class AlbIngressController extends pulumi.ComponentResource {
   /** `args` with filled in default values */
   readonly args: AlbIngressControllerArgs
@@ -49,11 +58,10 @@ export default class AlbIngressController extends pulumi.ComponentResource {
       values: {
         clusterName: args.clusterName,
         replicaCount: 2,
-        // livenessProbe: {
-        //   // So pulumi doesn't error while cluster nodes change
-        //   timeoutSeconds: 50,
-        //   failureThreshold: 4
-        // },
+        /** `keepTLSSecret` is broken:
+         * https://github.com/kubernetes-sigs/aws-load-balancer-controller/issues/2312
+         * */
+        // keepTLSSecret: true,
         ...args.values,
       },
     }
@@ -123,6 +131,8 @@ export default class AlbIngressController extends pulumi.ComponentResource {
     return new aws.iam.Policy(
       "alb-ingress-controller",
       {
+        description:
+          "Gives k8s ALB ingress controller access to required resources",
         policy: {
           Version: "2012-10-17",
           Statement: [

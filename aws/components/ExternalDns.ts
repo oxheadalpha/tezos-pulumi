@@ -13,31 +13,30 @@ interface ExternalDnsArgs {
   /** Namespace to deploy the chart in. Defaults to kube-system. */
   namespace?: string
   /** A unique id that restricts the external-dns instance from syncing any
-   * records that it is not an owner of in the hosted zone(s). You may use your
-   * cluster id. If you have multiple clusters, each cluster should have its own
-   * id. */
+   * records it isn't an owner of in a hosted zone. You may use your cluster id.
+   * If you have multiple clusters, each cluster should have its own id. You
+   * must explicity set this to `null` if you don't want to use it. */
   txtOwnerId: pulumi.Input<string | null>
   /**
-   * Values for the external-dns Helm chart
+   * Values for the external-dns Helm chart.
    * https://artifacthub.io/packages/helm/bitnami/external-dns#parameters.
-   * Setting chart `values` here will override any other other chart values that
-   * are configurable fields of ExternalDnsArgs. Such as `txtOwnerId`.
    */
   values?: pulumi.Inputs
   /** Helm chart version */
   version?: string
-  /** List of hosted zone id's. Used for external-dns policy Action
-   * "route53:ChangeResourceRecordSets", and as the "zoneIdFilters" value for
-   * the external-dns Helm chart. Defaults to "hostedzone/*".
+  /** List of hosted zone id's. Used for the external-dns IAM policy Action
+   * `route53:ChangeResourceRecordSets`, and as the `zoneIdFilters` value for
+   * the external-dns Helm chart. Defaults to "hostedzone/*". You must explicity
+   * set this to `null` if you don't want to use it.
    */
-  zoneIdFilters?: pulumi.Input<string>[]
-
-  // skipAwait?: boolean
+  zoneIdFilters: pulumi.Input<string>[] | null
 }
 
 /**
  * Deploy the external-dns Helm chart including the necessary IAM policy.
+ *
  * Chart repo: https://github.com/kubernetes-sigs/external-dns
+ *
  * Helm chart:  https://artifacthub.io/packages/helm/bitnami/external-dns
  */
 export default class ExteranlDns extends pulumi.ComponentResource {
@@ -53,11 +52,13 @@ export default class ExteranlDns extends pulumi.ComponentResource {
       version: args.version || "5.4.15",
       values: {
         replicas: 2,
+        // Set the owner of the records created.
         txtOwnerId: args.txtOwnerId,
         // Delete route53 records after an ingress or its hosts are deleted.
         policy: "sync",
         // Limit possible target zones by zone id.
         zoneIdFilters: args.zoneIdFilters,
+        // Filter for public zones.
         aws: {
           zoneType: "public",
         },
