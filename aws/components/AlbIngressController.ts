@@ -39,6 +39,8 @@ interface AlbIngressControllerArgs {
 export default class AlbIngressController extends pulumi.ComponentResource {
   /** `args` with filled in default values */
   readonly args: AlbIngressControllerArgs
+  /** The ALB controller Helm chart instance */
+  readonly chart: k8s.helm.v3.Chart
 
   constructor(
     args: AlbIngressControllerArgs,
@@ -76,10 +78,10 @@ export default class AlbIngressController extends pulumi.ComponentResource {
       { parent: this }
     )
 
-    pulumi.log.info(
+    pulumi.log.debug(
       `aws-load-balancer-controller transformation: Will ignore changes to TLS certificate on subsequent pulumi ups.`
     )
-    new k8s.helm.v3.Chart(
+    this.chart = new k8s.helm.v3.Chart(
       "aws-load-balancer-controller",
       {
         chart: "aws-load-balancer-controller",

@@ -42,9 +42,11 @@ interface ExternalDnsArgs {
 export default class ExteranlDns extends pulumi.ComponentResource {
   /** `args` with filled in default values */
   readonly args: ExternalDnsArgs
+  /** The external-dns Helm chart instance */
+  readonly chart: k8s.helm.v3.Chart
 
   constructor(args: ExternalDnsArgs, opts?: pulumi.ComponentResourceOptions) {
-    super("aws:external-dns:ExternalDns", "external-dns", {}, opts)
+    super("tezos-aws:external-dns:ExternalDns", "external-dns", {}, opts)
 
     this.args = {
       ...args,
@@ -111,7 +113,7 @@ export default class ExteranlDns extends pulumi.ComponentResource {
       { parent: this }
     )
 
-    new k8s.helm.v3.Chart(
+    this.chart = new k8s.helm.v3.Chart(
       "external-dns",
       {
         chart: "external-dns",
