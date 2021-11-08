@@ -3,9 +3,9 @@
 
 
 "@grpc/grpc-js@^1.2.7":
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-1.4.2.tgz#273e9b81990b95fb9f3b043847e6861246a491a9"
-  integrity sha512-aUN6oGk9un8rfYWz73nQgFxPCYJQYd8LpIGguZHBsNduBMyqG6EWANrsVBuTG+nl/l4dKb3x+qi1l9+oxDxqGg==
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-1.4.4.tgz#59336f13d77bc446bbdf2161564a32639288dc5b"
+  integrity sha512-a6222b7Dl6fIlMgzVl7e+NiRoLiZFbpcwvBH2Oli56Bn7W4/3Ld+86hK4ffPn5rx2DlDidmIcvIJiOQXyhv9gA==
   dependencies:
     "@grpc/proto-loader" "^0.6.4"
     "@types/node" ">=12.12.47"
@@ -87,9 +87,9 @@
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
 "@pulumi/aws@^4.15.0":
-  version "4.25.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-4.25.0.tgz#bbdde77c65213a88029bf9a5f8d655a6a0c34891"
-  integrity sha512-CcK1zc3Exv77QGxxsGatMv3tuY1dMAdzDDbb7MpHrPHwEx2mo2hi6SX9nSdXepeSw6eH1N2NQEJx7zbQnpun+A==
+  version "4.27.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-4.27.0.tgz#8c2106694e017ecee12adbc1f9ddec517c8b629f"
+  integrity sha512-X3IC5tGELzfZbVy6oWg+qAMqFCwqlUk3Wr8i4S355fEIlRIcGdkXt3nOicTdPw5r6asL4FYyzMSc1/Dr80A7oA==
   dependencies:
     "@pulumi/pulumi" "^3.0.0"
     aws-sdk "^2.0.0"
@@ -130,9 +130,9 @@
     which "^1.3.1"
 
 "@pulumi/kubernetes@^3.0.0":
-  version "3.8.2"
-  resolved "https://registry.yarnpkg.com/@pulumi/kubernetes/-/kubernetes-3.8.2.tgz#3d10843b4bcb6e44c1564aac89dc11b4cfae172b"
-  integrity sha512-bmQhXAGg6n3yU03rMQyypg7gwnDxP9fSbV4+l5/H8eBZDrVdrba5ysfJ9Ww76HfFyOT275ahXJKsQFJ1pIpzyw==
+  version "3.9.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/kubernetes/-/kubernetes-3.9.0.tgz#88ffd5fdda740d519db2ccab6ef3d2fd79ea153c"
+  integrity sha512-Qy4xP2QaYp9GMuAxwiY/M99kZZ1D5CrzbOkiUu6RRqMQFWEKP6U8VY4/9PDCC+uBvDK2iwa+7h5wvzVoZpNjbw==
   dependencies:
     "@pulumi/pulumi" "^3.0.0"
     "@types/glob" "^5.0.35"
@@ -165,9 +165,9 @@
     upath "^1.1.0"
 
 "@pulumi/pulumi@^3.0.0":
-  version "3.16.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-3.16.0.tgz#08ac7fa655477c100d56c15e7692dea7649eff3f"
-  integrity sha512-pAZE/sLHg9xZ01H7pACi6STNwyg4A0ZhR9SK9lrRKgaJt30j8K855AhurXB0/3jVN7Y9dIbbSir70XKRDNKHOg==
+  version "3.17.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-3.17.0.tgz#ecfb8104db371440b29af1f8de3f226a83265519"
+  integrity sha512-pzHGWYTGgoeLQ8s7ymEj7Us4tG9ijMIvWiq69pKiel+ZkiSfj35/XlYc2DMu8yxEK9POSA99MJny/2cEOC7GYg==
   dependencies:
     "@grpc/grpc-js" "~1.3.8"
     "@logdna/tail-file" "^2.0.6"
@@ -191,9 +191,9 @@
   integrity sha512-xfo+yLRM2zVjVEA4p23IjQWzyWl1ZhWOGobsBqRpIarzLvwNH/RAGaoehdxlhx4X92302DrpdIFgTICMN4P38w==
 
 "@types/aws-lambda@^8.10.23":
-  version "8.10.84"
-  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.84.tgz#b1f391ceeb6908b28d8416d93f27afe8d1348d4e"
-  integrity sha512-5V78eLtmN0d4RA14hKDwcsMQRl3JotQJlhGFDBo/jdE2TyDFRaYwB/UmMUC4SzhSvRGn+YMkh7jGPnXi8COAng==
+  version "8.10.85"
+  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.85.tgz#26cd76897b1972247cbc1a34b6f21d023e987437"
+  integrity sha512-cMRXVxb+NMb6EekKel1fPBfz2ZqE5cGhIS14G7FVUM4Bqilx0lHKnZbsDLWLSeckDpkvlp5six2F7UWyEEJSoQ==
 
 "@types/glob@^5.0.35":
   version "5.0.37"
@@ -283,9 +283,9 @@ asynckit@^0.4.0:
   integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
 
 aws-sdk@^2.0.0:
-  version "2.1017.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1017.0.tgz#cc8981d269ab6c1de9f3d6bf8e9cb6d85f3dcbc7"
-  integrity sha512-oS3KmMhzxK0HEy1AfHV8EjfvNlm8PpLSswbh+SF6MBP1Hy8vyQ/1dFhhWpEogpyIzV6MUdKnq++bTijXGIRqdA==
+  version "2.1023.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1023.0.tgz#0de16e4e8878ccec4fcd0146322dcf94fdbe09ba"
+  integrity sha512-RAI8sUfK+00yL9i3xz5kbM3+t/0mjjnKhKyauXAlJN4seDYtIX5+BqMghpkZwvLBdi6idXIuz+FHWETHZccyuA==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -483,9 +483,9 @@ events@1.1.1:
   integrity sha1-nr23Y1rQmccNzEwqH1AEKI6L2SQ=
 
 follow-redirects@^1.14.0:
-  version "1.14.4"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.4.tgz#838fdf48a8bbdd79e52ee51fb1c94e3ed98b9379"
-  integrity sha512-zwGkiSXC1MUJG/qmeIFH2HBJx9u0V46QGUe3YR1fXG8bXQxq7fLj0RjLZQ5nubr9qNJUZrH+xUcwXEoXNpfS+g==
+  version "1.14.5"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.5.tgz#f09a5848981d3c772b5392309778523f8d85c381"
+  integrity sha512-wtphSXy7d4/OR+MvIFbCVBDzZ5520qV8XfPklSN5QtxuMUJZ+b0Wnst1e1lCDocfzuCkHqj8k0FpZqO+UIaKNA==
 
 form-data@^3.0.0:
   version "3.0.1"
@@ -541,9 +541,9 @@ glob@^7.1.1, glob@^7.1.2:
     path-is-absolute "^1.0.0"
 
 google-protobuf@^3.5.0:
-  version "3.19.0"
-  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.19.0.tgz#97f474323c92f19fd6737af1bb792e396991e0b8"
-  integrity sha512-qXGAiv3OOlaJXJNeKOBKxbBAwjsxzhx+12ZdKOkZTsqsRkyiQRmr/nBkAkqnuQ8cmA9X5NVXvObQTpHVnXE2DQ==
+  version "3.19.1"
+  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.19.1.tgz#5af5390e8206c446d8f49febaffd4b7f4ac28f41"
+  integrity sha512-Isv1RlNC+IzZzilcxnlVSf+JvuhxmY7DaxYCBy+zPS9XVuJRtlTTIXR9hnZ1YL1MMusJn/7eSy2swCzZIomQSg==
 
 graceful-fs@^4.1.2:
   version "4.2.8"
@@ -780,9 +780,9 @@ mime-types@^2.1.12:
     mime-db "1.50.0"
 
 mime@^2.0.0:
-  version "2.5.2"
-  resolved "https://registry.yarnpkg.com/mime/-/mime-2.5.2.tgz#6e3dc6cc2b9510643830e5f19d5cb753da5eeabe"
-  integrity sha512-tqkh47FzKeCPD2PUiPB6pkbMzsCasjxAfC62/Wap5qrUWcb+sFasXUC5I3gYM5iBM8v/Qpn4UK0x+j0iHyFPDg==
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-2.6.0.tgz#a2a682a95cd4d0cb1d6257e28f83da7e35800367"
+  integrity sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==
 
 minimatch@^3.0.4:
   version "3.0.4"
@@ -814,9 +814,9 @@ netmask@^2.0.1:
   integrity sha512-dBpDMdxv9Irdq66304OLfEmQ9tbNRFnFTuZiLo+bD+r332bBmMJ8GBLXklIXXgxd3+v9+KUnZaUR5PJMa75Gsg==
 
 node-fetch@^2.3.0:
-  version "2.6.5"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.5.tgz#42735537d7f080a7e5f78b6c549b7146be1742fd"
-  integrity sha512-mmlIVHJEu5rnIxgEgez6b9GgWXbkZj5YZ7fx+2r94a2E+Uirsp6HsPTPlomfdHtpt/B0cdKviwkoaM6pyvUOpQ==
+  version "2.6.6"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.6.tgz#1751a7c01834e8e1697758732e9efb6eeadfaf89"
+  integrity sha512-Z8/6vRlTUChSdIgMa51jxQ4lrw/Jy5SOW10ObaA47/RElsAN2c5Pn8bTgFGWn/ibwzXTE8qwr1Yzx28vsecXEA==
   dependencies:
     whatwg-url "^5.0.0"
 
