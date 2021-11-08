@@ -35,7 +35,7 @@ export interface AlbIngressArgs {
   metadata?: k8sInputTypes.meta.v1.ObjectMeta
   /** Prevent pulumi from waiting for the ingress to be marked as ready. If
    * pulumi waits for the ingress and it fails to resolve on its first attempt,
-   * Pulumi will error out. Defaults to `true`.
+   * Pulumi will error out. Defaults to `false`.
    * https://www.pulumi.com/blog/improving-kubernetes-management-with-pulumis-await-logic/
    * */
   skipAwait?: PulumiSkipAwait
@@ -141,7 +141,7 @@ export const fillInArgDefaults = (
   const filledInArgs: AlbIngressArgs = {
     ...userInputArgs,
     loadBalancerScheme: userInputArgs.loadBalancerScheme || "internet-facing",
-    skipAwait: userInputArgs.skipAwait === false ? false : true,
+    skipAwait: userInputArgs.skipAwait || false,
   }
 
   const annotations = getAnnotations(filledInArgs, internalArgs)
@@ -154,12 +154,7 @@ export const getIngressResourceArgs = (
   internalArgs: InternalAlbIngressArgs
 ): k8s.networking.v1.IngressArgs => {
   if (args.skipAwait) {
-    pulumi.log.info(`
-    ${name}: Pulumi will not wait for the ingress to be ready. This is because
-    it has a dependency on the AWS load balancer controller Helm chart and Pulumi can't know
-    precisely when the controller is ready. Pulumi will error out if the ingress fails to
-    resolve immediately. You can let Pulumi wait by setting the "skipAwait" arg to false.
-    `)
+    pulumi.log.info(`${name}: Pulumi won't wait for the ingress to be ready.`)
   }
 
   const ingressPaths = getIngressPaths(args, internalArgs)
