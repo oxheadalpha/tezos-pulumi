@@ -15,9 +15,5 @@
   "devDependencies": {
     "@types/node": "16.7.9"
   },
-  "scripts": {
-    "tsc": "./node_modules/typescript/bin/tsc",
-    "build": "tsc -d --declarationMap --outDir ./",
-    "postinstall": "npm run build"
-  }
+  "type": "module"
 }
