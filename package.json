@@ -17,7 +17,7 @@
   },
   "scripts": {
     "tsc": "./node_modules/typescript/bin/tsc",
-    "build": "tsc -d",
+    "build": "tsc -d --declarationMap",
     "postinstall": "npm run build"
   }
 }
