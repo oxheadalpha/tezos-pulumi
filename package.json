@@ -9,11 +9,11 @@
     "@pulumi/pulumi": "3.11.0",
     "cron-parser": "3.5.0",
     "ts-deepmerge": "1.1.0",
+    "tsconfig-paths": "3.11.0",
     "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@types/node": "16.7.9",
-    "tsconfig-paths": "3.11.0"
+    "@types/node": "16.7.9"
   },
   "scripts": {
     "tsc": "./node_modules/typescript/bin/tsc",
