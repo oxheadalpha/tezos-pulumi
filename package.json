@@ -14,5 +14,10 @@
   "devDependencies": {
     "@types/node": "16.7.9",
     "tsconfig-paths": "3.11.0"
+  },
+  "scripts": {
+    "tsc": "./node_modules/typescript/bin/tsc",
+    "build": "tsc -d",
+    "postinstall": "npm run build"
   }
 }

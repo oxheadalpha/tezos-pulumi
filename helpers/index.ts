@@ -21,7 +21,7 @@ export const getEnvVar = (name: string): string => {
 export const parseYamlFile = ({
   file,
   resource,
-  options
+  options,
 }: {
   file: string
   resource?: pulumi.Resource
