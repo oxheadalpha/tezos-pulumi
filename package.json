@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "author": "Aryeh Harris <aryeh.harris@oxheadalpha.com>",
   "license": "MIT",
+  "main": "bin/index.js",
+  "types": "bin/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "@pulumi/awsx": "0.31.0",
     "@pulumi/eks": "0.33.0",
