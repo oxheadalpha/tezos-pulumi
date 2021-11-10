@@ -6,7 +6,8 @@
   "main": "bin/index.js",
   "types": "bin/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "postinstall": "tsc"
   },
   "dependencies": {
     "@pulumi/awsx": "0.31.0",
