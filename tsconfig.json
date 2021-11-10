@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": ".",
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
@@ -13,20 +13,15 @@
     "sourceMap": true,
     "strict": true,
     "strictPropertyInitialization": false,
-    "target": "es2016",
-
-    "allowJs": true,
-    "checkJs": true,
-    "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true,
+    "target": "es2018",
+    "declaration": true,
     "resolveJsonModule": true,
-    "isolatedModules": false,
   },
-  "include": [
-    "./**/*.ts",
+  "files": [
+    "index.ts",
   ],
   "exclude": [
     "node_modules/**/*",
-    // "types"
+    "bin/**/*"
   ]
 }
