@@ -2,7 +2,7 @@ import * as aws from "@pulumi/aws"
 import * as pulumi from "@pulumi/pulumi"
 import * as k8s from "@pulumi/kubernetes"
 
-import { ignoreChangesTransformation } from "helpers"
+import { ignoreChangesTransformation } from "../../helpers"
 
 import { RolePolicyAttachmentArgs } from "@pulumi/aws/iam/rolePolicyAttachment"
 

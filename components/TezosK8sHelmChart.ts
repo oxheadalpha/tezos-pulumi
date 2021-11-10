@@ -5,10 +5,10 @@ import {
   isObjectLike,
   mergeWithArrayOverrideOption,
   parseYamlFile,
-} from "helpers"
+} from "../helpers"
 
 import { ChartOpts, LocalChartOpts } from "@pulumi/kubernetes/helm/v3"
-import { MergeExclusive } from "customTypes"
+import { MergeExclusive } from "../customTypes"
 
 /** We hardcode the chart's `config` properties `chart` and `fetchOpts` to
  * install the `tezos-k8s` chart */

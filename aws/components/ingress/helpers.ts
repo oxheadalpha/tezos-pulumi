@@ -3,7 +3,7 @@ import * as k8s from "@pulumi/kubernetes"
 import merge from "ts-deepmerge"
 
 import * as k8sInputTypes from "@pulumi/kubernetes/types/input"
-import { PulumiSkipAwait } from "customTypes/pulumi"
+import { PulumiSkipAwait } from "../../../customTypes/pulumi"
 
 /** Describes the arguments for an ingress that will be exposed by an
  * application load balancer.

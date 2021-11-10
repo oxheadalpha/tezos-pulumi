@@ -1,10 +1,10 @@
 import * as pulumi from "@pulumi/pulumi"
 import * as k8s from "@pulumi/kubernetes"
 import merge from "ts-deepmerge"
-import { mergeWithArrayOverrideOption } from "helpers"
+import { mergeWithArrayOverrideOption } from "../../../helpers"
 
 import * as k8sInputTypes from "@pulumi/kubernetes/types/input"
-import { AugmentedRequired, PulumiSkipAwait } from "customTypes"
+import { AugmentedRequired, PulumiSkipAwait } from "../../../customTypes"
 
 /** Make `spec.selector` required. User must select labels of pods to forward
  * traffic to. */
