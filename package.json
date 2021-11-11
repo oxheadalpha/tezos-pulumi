@@ -13,7 +13,6 @@
     "@pulumi/awsx": "0.31.0",
     "@pulumi/eks": "0.33.0",
     "@pulumi/pulumi": "3.11.0",
-    "cron-parser": "3.5.0",
     "ts-deepmerge": "1.1.0",
     "yaml": "1.10.2"
   },
