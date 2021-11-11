@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "author": "Aryeh Harris <aryeh.harris@oxheadalpha.com>",
   "license": "MIT",
+  "description": "Deploy Tezos Infrastructure in the Cloud",
   "main": "bin/index.js",
   "types": "bin/index.d.ts",
+  "files": [
+    "bin/**/*"
+  ],
   "scripts": {
-    "build": "tsc",
-    "postinstall": "tsc"
+    "build": "tsc"
   },
   "dependencies": {
     "@pulumi/awsx": "0.31.0",
