@@ -56,7 +56,7 @@ export default class AlbIngressController extends pulumi.ComponentResource {
     this.args = {
       ...args,
       namespace: args.namespace || "kube-system",
-      version: args.version || "1.3.2",
+      version: args.version,
       values: {
         clusterName: args.clusterName,
         replicaCount: 2,

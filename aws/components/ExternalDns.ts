@@ -51,7 +51,7 @@ export default class ExteranlDns extends pulumi.ComponentResource {
     this.args = {
       ...args,
       namespace: args.namespace || "kube-system",
-      version: args.version || "5.4.15",
+      version: args.version,
       values: {
         replicas: 2,
         // Set the owner of the records created.
