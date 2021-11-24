@@ -8,13 +8,12 @@ import {
 } from "../helpers"
 
 import { ChartOpts, LocalChartOpts } from "@pulumi/kubernetes/helm/v3"
-import { MergeExclusive } from "../customTypes"
 
 /** We hardcode the chart's `config` properties `chart` and `fetchOpts` to
  * install the `tezos-k8s` chart */
 type CustomChartOpts = Omit<ChartOpts, "chart" | "fetchOpts">
 /** Make that user can't specify both ChartOpts and LocalChartOpts */
-type CustomChartConfig = MergeExclusive<CustomChartOpts, LocalChartOpts>
+type CustomChartConfig = CustomChartOpts | LocalChartOpts
 /** Describes the Helm chart config */
 export type TezosK8sHelmChartConfig = CustomChartConfig & {
   /**
