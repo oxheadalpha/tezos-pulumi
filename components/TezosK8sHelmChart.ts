@@ -44,6 +44,8 @@ const implementsLocalChartOpts = (
  * - `skipAwait` defaults to `true`
  */
 export class TezosK8sHelmChart extends pulumi.ComponentResource {
+  /** The tezos-k8s Helm chart instance */
+  readonly chart: k8s.helm.v3.Chart
   /** The final chart `values` of merged `values` and `valuesFiles` args. */
   readonly values: object
 
@@ -93,7 +95,7 @@ export class TezosK8sHelmChart extends pulumi.ComponentResource {
       }
     }
 
-    new k8s.helm.v3.Chart(releaseName, filledInConfig, {
+    this.chart = new k8s.helm.v3.Chart(releaseName, filledInConfig, {
       parent: this,
     })
   }
