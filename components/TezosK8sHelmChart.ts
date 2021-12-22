@@ -44,7 +44,8 @@ const implementsLocalChartOpts = (
  * - `skipAwait` defaults to `true`
  */
 export class TezosK8sHelmChart extends pulumi.ComponentResource {
-  readonly config: ChartOpts | LocalChartOpts
+  /** The final chart `values` of merged `values` and `valuesFiles` args. */
+  readonly values: object
 
   /**
    * Create an instance of the specified Helm chart.
@@ -71,6 +72,8 @@ export class TezosK8sHelmChart extends pulumi.ComponentResource {
       values,
     ])
 
+    this.values = mergedValues
+
     const filledInConfig = mergeWithArrayOverrideOption([
       rest,
       {
@@ -90,9 +93,7 @@ export class TezosK8sHelmChart extends pulumi.ComponentResource {
       }
     }
 
-    this.config = filledInConfig
-
-    new k8s.helm.v3.Chart(releaseName, this.config, {
+    new k8s.helm.v3.Chart(releaseName, filledInConfig, {
       parent: this,
     })
   }
