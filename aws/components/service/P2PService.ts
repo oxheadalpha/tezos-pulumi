@@ -4,18 +4,10 @@ import merge from "ts-deepmerge"
 import { mergeWithArrayOverrideOption } from "../../../helpers"
 
 import * as k8sInputTypes from "@pulumi/kubernetes/types/input"
-import { AugmentedRequired, PulumiSkipAwait } from "../../../customTypes"
+import { PulumiSkipAwait } from "../../../customTypes"
 
-/** Make `spec.selector` required. User must select labels of pods to forward
- * traffic to. */
-type CustomeServiceSpec = AugmentedRequired<
-  k8sInputTypes.core.v1.ServiceSpec,
-  "selector"
->
-
-/** Describes the arguments for a service that will be exposed by a network load
- * balancer. */
-export interface NlbServiceArgs {
+/** Describes the arguments for the `P2PService` component. */
+export interface P2PServiceArgs {
   /**
    * `metadata.annotations` defaults to:
    * ```
@@ -31,13 +23,13 @@ export interface NlbServiceArgs {
   metadata?: k8sInputTypes.meta.v1.ObjectMeta
   /**
    * ServiceSpec describes the attributes that a user creates on a service. The
-   * default service spec sets `ports` to `9732` and sets `type` to
-   * `LoadBalancer`.
+   * default service spec sets `ports` to `9732`, `type` to `LoadBalancer`, and
+   * `selector` to `{ appType: "tezos-node" }`.
    *
-   * You must provide labels to the `selector` field to
-   * configure which pods to forward traffic to.
+   * The service will target all Tezos nodes with label "tezos-node". tezos-k8s
+   * adds this label to all nodes by default.
    */
-  spec: CustomeServiceSpec
+  spec?: k8sInputTypes.core.v1.ServiceSpec
   /** Prevent pulumi from waiting for the resource to be marked as ready. This
    * is useful as an example, for when starting up a Tezos node that needs to do
    * a lot of catchup with the head of the chain. The node's pod will not be
@@ -64,13 +56,11 @@ export interface NlbServiceArgs {
  * https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/nlb/
  * */
 export class P2PService extends pulumi.ComponentResource {
-  /** `args` with filled in default values */
-  readonly args: NlbServiceArgs
   /** The p2p service */
   readonly service: k8s.core.v1.Service
 
   /**
-   * Create an RpcIngress resource with the given unique name, arguments, and options.
+   * Create a `P2PService` resource with the given unique name, arguments, and options.
    *
    * @param name The _unique_ name of the resource.
    * @param args The arguments to use to populate this resource's properties.
@@ -79,12 +69,12 @@ export class P2PService extends pulumi.ComponentResource {
    */
   constructor(
     name: string,
-    args: NlbServiceArgs,
+    args: P2PServiceArgs,
     opts?: pulumi.ComponentResourceOptions
   ) {
     super("tezos-aws:service:P2PService", name, args, opts)
 
-    const metadata: NlbServiceArgs["metadata"] = merge(
+    const metadata: P2PServiceArgs["metadata"] = merge(
       {
         annotations: {
           "service.beta.kubernetes.io/aws-load-balancer-type": "nlb-ip",
@@ -97,7 +87,6 @@ export class P2PService extends pulumi.ComponentResource {
       args.metadata || {}
     )
 
-    this.args = args
     this.service = new k8s.core.v1.Service(
       name,
       {
@@ -112,8 +101,9 @@ export class P2PService extends pulumi.ComponentResource {
               },
             ],
             type: "LoadBalancer",
+            selector: { appType: "tezos-node" },
           },
-          args.spec,
+          args.spec || {},
         ]),
       },
       {
