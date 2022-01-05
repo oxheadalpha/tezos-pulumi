@@ -9,6 +9,9 @@
   "files": [
     "bin/**/*"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc"
   },
