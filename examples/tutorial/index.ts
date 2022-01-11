@@ -67,7 +67,7 @@ const cluster = new eks.Cluster(projectStack, {
   instanceType: "t3.large",
   minSize: 0,
   maxSize: 2,
-  desiredCapacity: 0,
+  desiredCapacity: 2,
 })
 
 /** Stack outputs: https://www.pulumi.com/learn/building-with-pulumi/stack-outputs/ */
