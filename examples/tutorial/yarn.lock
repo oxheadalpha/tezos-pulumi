@@ -33,6 +33,17 @@
   resolved "https://registry.yarnpkg.com/@logdna/tail-file/-/tail-file-2.1.0.tgz#7c3d98c3378d15061589e12875ffb7673b0ce82c"
   integrity sha512-8zYzetB1zfa7WA4c0RS1EU9pNKcj1BqilU2fCsEvmKfWgEdpaphff6hk2Rcn3A0qHwynEdw9lTrlYN4sUw2FpA==
 
+"@oxheadalpha/tezos-pulumi@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@oxheadalpha/tezos-pulumi/-/tezos-pulumi-1.0.0.tgz#83bac1c984e32953b05c2e488273e182c8850191"
+  integrity sha512-EuMrt93xPFYJTEl8hGhk4HpIfhe8CuHJfLGEns7lbywS165tV2VRaciiO5tYGB45CpkhAZHiXWDgRlHE+IO4CA==
+  dependencies:
+    "@pulumi/awsx" "0.31.0"
+    "@pulumi/eks" "0.33.0"
+    "@pulumi/pulumi" "3.11.0"
+    ts-deepmerge "1.1.0"
+    yaml "1.10.2"
+
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@protobufjs/aspromise/-/aspromise-1.1.2.tgz#9b8b0cc663d669a7d8f6f5d0893a14d348f30fbf"
@@ -1072,17 +1083,6 @@ supports-preserve-symlinks-flag@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
-
-tezos-pulumi@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/tezos-pulumi/-/tezos-pulumi-2.0.0.tgz#9422f5c298a1a5d1f00d7830b8e2ab3a1f683c13"
-  integrity sha512-EbaO415SBbS7T1ledak3EgLEkX/x4AP6+ZJxWy42FgD+lXPIEdDaJOMm6f3w1vL3rqxbUR1EtOLXK5v8FPPKXA==
-  dependencies:
-    "@pulumi/awsx" "0.31.0"
-    "@pulumi/eks" "0.33.0"
-    "@pulumi/pulumi" "3.11.0"
-    ts-deepmerge "1.1.0"
-    yaml "1.10.2"
 
 tmp@^0.0.33:
   version "0.0.33"
