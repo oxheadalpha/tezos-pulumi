@@ -1,0 +1,13 @@
+nodes:
+  rolling-node:
+    storage_size: 100Gi
+    storageClassName: "gp2-volume-expansion"
+    runs:
+      - octez_node
+    instances:
+      - config:
+          shell:
+            history_mode: rolling
+
+rolling_tarball_url: http://tezos-tarballs.s3-website.us-east-2.amazonaws.com/mainnet-rolling-tarball
+rolling_snapshot_url: null

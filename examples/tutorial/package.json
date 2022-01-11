@@ -1,0 +1,12 @@
+{
+    "name": "tezos-aws",
+    "devDependencies": {
+        "@types/node": "17.0.8"
+    },
+    "dependencies": {
+        "@oxheadalpha/tezos-pulumi": "1.0.0",
+        "@pulumi/aws": "4.33.0",
+        "@pulumi/awsx": "0.32.0",
+        "@pulumi/pulumi": "3.21.0"
+    }
+}
