@@ -1,11 +1,12 @@
-import * as aws from "@pulumi/aws"
 import * as awsx from "@pulumi/awsx"
 import * as eks from "@pulumi/eks"
 import * as k8s from "@pulumi/kubernetes"
 import * as pulumi from "@pulumi/pulumi"
 import * as tezos from "@oxheadalpha/tezos-pulumi"
 
+/** https://www.pulumi.com/docs/intro/concepts/project/ */
 const project = pulumi.getProject()
+/** https://www.pulumi.com/docs/intro/concepts/stack/ */
 const stack = pulumi.getStack()
 
 const projectStack = `${project}-${stack}`
@@ -129,15 +130,16 @@ const mainnetNamespace = new k8s.core.v1.Namespace(
   { provider: cluster.provider }
 )
 
-/** Deploy the tezos-k8s Helm chart into the namespace. This will create the
- * Tezos rolling node amongst other things. */
+/** Deploy the tezos-k8s Helm chart into the mainnet namespace. This will create
+ * the Tezos rolling node amongst other things. */
 const helmChart = new tezos.TezosK8sHelmChart(
-  "tezos-aws",
+  `${namespace}-tezos-aws`,
   {
     namespace,
+    // The path to a Helm values.yaml file
     valuesFiles: "./values.yaml",
     // The latest tezos-k8s version as of the time of this writing.
-    version: "6.0.0",
+    version: "6.0.1",
   },
   {
     provider: cluster.provider,
@@ -145,14 +147,27 @@ const helmChart = new tezos.TezosK8sHelmChart(
   }
 )
 
+/** Create the RPC ingress to expose your node's RPC endpoint. The alb
+ * controller will create an application load balancer. */
+const rpcIngress = new tezos.aws.RpcIngress(
+  `${namespace}-rpc-ingress`,
+  { metadata: { name: `${namespace}-rpc-ingress`, namespace } },
+  {
+    provider: cluster.provider,
+    dependsOn: albController.chart.ready,
+    parent: mainnetNamespace,
+  }
+)
+
+
 /**
- * The following `rpcIngress` and `p2pService` `dependsOn` the `albController`.
- * What this does is set an explicit dependency of these components on the
- * `albController`. This is because pulumi has no way of knowing that they are
+ * The following `rpcIngress` sets the `dependsOn` property the `albController`.
+ * What this does is set an explicit dependency of this component on the
+ * `albController`. This is because pulumi has no way of knowing that it's
  * dependent on the controller to have load balancers created. The controller is
- * a k8s resource, not a pulumi resource. The ingress and service will wait for
+ * a k8s resource, not a pulumi resource. The ingress will wait for
  * the controller to be fully ready. Without waiting, pulumi may error due to
- * the ingress/service not resolving right away.
+ * the ingress not resolving right away.
  *
  * Being that pulumi is not in control of what the controller is doing, it is
  * highly recommended to destroy your deployment in 2 stages. The first is to
@@ -163,17 +178,6 @@ const helmChart = new tezos.TezosK8sHelmChart(
  * the AWS resources.
  */
 
-/** Create the RPC ingress to expose your node's RPC endpoint. The alb
- * controller will create an application load balancer. */
-const rpcIngress = new tezos.aws.RpcIngress(
-  "rpc-ingress",
-  { metadata: { name: "rpc-ingress", namespace } },
-  {
-    provider: cluster.provider,
-    dependsOn: albController.chart.ready,
-    parent: mainnetNamespace,
-  }
-)
 
 /** Create the P2P service to expose your node's P2P endpoint. The alb
  * controller will create a network load balancer. The service selects by default all pods
