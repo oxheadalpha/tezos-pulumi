@@ -1,17 +1,18 @@
-# Define the types of nodes we want to deploy in our cluster
+# Define the types Tezos of nodes we want to deploy in our cluster
 nodes:
   rolling-node:
     storage_size: 100Gi
-    # We create a new storage class in the Pulumi index.ts file that allows us
-    # to expand an EBS volume's size. The default gp2 storage class created by
-    # EKS does not allow for volume expansion. We tell our `rolling-nodes` to
+    # We create a new k8s storage class in the Pulumi index.ts file that allows
+    # us to expand an EBS volume's size. The default gp2 storage class created
+    # by EKS does not allow for volume expansion. We tell our `rolling-nodes` to
     # use this storage class.
     storageClassName: "gp2-volume-expansion"
     # Run the Octez implementation of Tezos node, as opposed to Tezedge's
     # implementation.
     runs:
       - octez_node
-    # Create 2 Tezos rolling node instances
+    # Create 2 Tezos rolling nodes that will be distributed across the 2 cluster
+    # EC2 nodes we will be deploying.
     instances:
       - config:
           shell:

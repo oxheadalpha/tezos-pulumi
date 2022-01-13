@@ -56,8 +56,9 @@ export const vpcPublicSubnetIds = vpc.publicSubnetIds
 export const vpcPrivateSubnetIds = vpc.privateSubnetIds
 
 /** Create the EKS cluster. The cluster will be created in the new vpc. The
- * autoscaling group will spin up 2 cluster nodes where they will be distributed
- * across our 2 private subnets. Each subnet is in 1 of 2 vpc zones.
+ * autoscaling group will spin up 2 cluster nodes (EC2 instances) where they
+ * will be distributed across our 2 private subnets. Each subnet is in 1 of 2
+ * vpc zones.
  */
 const cluster = new eks.Cluster(projectStack, {
   vpcId: vpc.id,
@@ -127,7 +128,7 @@ const namespace = "mainnet"
 const mainnetNamespace = new k8s.core.v1.Namespace(
   namespace,
   { metadata: { name: namespace } },
-  { provider: cluster.provider }
+  { provider: cluster.provider, parent: cluster }
 )
 
 /** Deploy the tezos-k8s Helm chart into the mainnet namespace. This will create
@@ -158,114 +159,3 @@ const rpcIngress = new tezos.aws.RpcIngress(
     parent: mainnetNamespace,
   }
 )
-
-
-/**
- * The following `rpcIngress` sets the `dependsOn` property the `albController`.
- * What this does is set an explicit dependency of this component on the
- * `albController`. This is because pulumi has no way of knowing that it's
- * dependent on the controller to have load balancers created. The controller is
- * a k8s resource, not a pulumi resource. The ingress will wait for
- * the controller to be fully ready. Without waiting, pulumi may error due to
- * the ingress not resolving right away.
- *
- * Being that pulumi is not in control of what the controller is doing, it is
- * highly recommended to destroy your deployment in 2 stages. The first is to
- * tear down the ingress and service. This will allow the controller to delete
- * all of the backing AWS resources. Then to destory the rest of the cluster and
- * remaining pulumi resources. Otherwise, some AWS resources may be orphaned as
- * there may be a race condition of the controller being deleted and it deleting
- * the AWS resources.
- */
-
-
-/** Create the P2P service to expose your node's P2P endpoint. The alb
- * controller will create a network load balancer. The service selects by default all pods
- * with label "appType=tezos-node". tezos-k8s creates Tezos node pods by default
- * with this label. */
-// const p2pService = new tezos.aws.P2PService(
-//   "p2p-service",
-//   { metadata: { name: "p2p-service", namespace } },
-//   {
-//     provider: cluster.provider,
-//     dependsOn: albController.chart.ready,
-//     parent: mainnetNamespace,
-//   }
-// )
-
-// const rpcDomain = `rpc.${namespace}.aryeh.${oxheadHostedZoneName}`
-// const rpcCert = new aws.acm.Certificate(rpcDomain, {
-//   validationMethod: "DNS",
-//   domainName: rpcDomain,
-// })
-
-// const rpcCertValidationRecord = new aws.route53.Record(
-//   `${rpcDomain}-certValidation`,
-//   {
-//     name: rpcCert.domainValidationOptions[0].resourceRecordName,
-//     records: [rpcCert.domainValidationOptions[0].resourceRecordValue],
-//     ttl: 300,
-//     type: rpcCert.domainValidationOptions[0].resourceRecordType,
-//     zoneId: oxheadZone.id,
-//   }
-// )
-
-// const certValidation = new aws.acm.CertificateValidation(rpcDomain, {
-//   certificateArn: rpcCert.arn,
-//   validationRecordFqdns: [rpcCertValidationRecord.fqdn],
-// })
-
-// Wait for all resources of both charts to be ready
-// const ingressDependencies = pulumi
-//   .all([albController.chart.ready, externalDns.chart.ready])
-//   .apply(([a, b]) => [...a, ...b])
-
-// const rpcIngress = new tezos.aws.RpcIngress(
-//   rpcDomain,
-//   {
-//     metadata: {
-//       name: rpcDomain,
-//       namespace,
-//     },
-//     host: rpcDomain,
-//     tls: [
-//       {
-//         hosts: rpcCert.domainValidationOptions.apply((dvos) =>
-//           dvos.map((dvo) => dvo.domainName)
-//         ),
-//       },
-//     ],
-//     skipAwait: false,
-//   },
-//   { provider: cluster.provider, dependsOn: ingressDependencies }
-// )
-
-// const rpcIngress = new tezos.aws.RpcIngress(
-//   "",
-//   {
-//     metadata: {
-//       name: rpcDomain,
-//       namespace,
-//     },
-//   },
-//   { provider: cluster.provider, dependsOn: albController }
-// )
-// export const rpcIngressOutput: any = rpcIngress.ingress.status.loadBalancer
-
-// // const p2pDomain = `${namespace}.aryeh.${oxheadHostedZoneName}`
-// const p2pService = new tezos.aws.P2PService(
-//   "",
-//   {
-//     skipAwait: false,
-//     metadata: { name: `${namespace}-p2p-svc`, namespace },
-//     spec: { selector: { peer_node: "true" } },
-//   },
-//   { provider: cluster.provider, dependsOn: albController }
-// )
-// export const p2pServiceOutput: any = p2pService.service.status.loadBalancer
-
-// TWO STAGE TEARDOWN
-// Check that timeout for webhook can be configured
-
-// N/A GIVE EXTERNAL DNS AND ALB CONTROLLER MORE TIME ON DELETE
-//
