@@ -1,6 +1,6 @@
 {
   "name": "@oxheadalpha/tezos-pulumi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Aryeh Harris <aryeh.harris@oxheadalpha.com>",
   "license": "MIT",
   "description": "Deploy Tezos Infrastructure in the Cloud",

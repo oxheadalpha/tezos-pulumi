@@ -1,0 +1,3 @@
+name: tezos-aws
+runtime: nodejs
+description: Deploy Tezos infrastructure on AWS
