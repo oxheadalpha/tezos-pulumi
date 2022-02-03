@@ -66,8 +66,9 @@ const cluster = new eks.Cluster(projectStack, {
   privateSubnetIds: vpc.privateSubnetIds,
   // At time of writing we found this instance type to be adequate
   instanceType: "t3.large",
-  minSize: 0,
-  maxSize: 2,
+  // Set `minSize` and `desiredCapacity` to 0 if you ever want to pause your
+  // cluster's workload.
+  minSize: 2,
   desiredCapacity: 2,
 })
 
