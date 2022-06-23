@@ -86,10 +86,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@pulumi/aws@^4.15.0":
-  version "4.27.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-4.27.0.tgz#8c2106694e017ecee12adbc1f9ddec517c8b629f"
-  integrity sha512-X3IC5tGELzfZbVy6oWg+qAMqFCwqlUk3Wr8i4S355fEIlRIcGdkXt3nOicTdPw5r6asL4FYyzMSc1/Dr80A7oA==
+"@pulumi/aws@^5.1.2":
+  version "5.9.1"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-5.9.1.tgz#012c22e7ea9761db5089f9bf51921c7b3aebbdfc"
+  integrity sha512-r17ahMxuK6MRTF2JA/pwzuG+3yDHY2GlAWQl438cjKZph9oYjbel/FxU/dR7R5mA63RwZRIhm1TDzDRKuX/o/A==
   dependencies:
     "@pulumi/pulumi" "^3.0.0"
     aws-sdk "^2.0.0"
@@ -115,18 +115,19 @@
     "@pulumi/pulumi" "^3.0.0"
     semver "^5.4.0"
 
-"@pulumi/eks@0.33.0":
-  version "0.33.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/eks/-/eks-0.33.0.tgz#f5f5858f76db82046d12cde73db930ac4a54e03a"
-  integrity sha512-r+iy7c/W6lb+VQCIgVOuNAyDk0VR1a8Dabh/HKwjnJBIEKdKZGLNolNMZEON28FeZ8ccfg5DsELzFJSNQ1/B/w==
+"@pulumi/eks@0.41.0":
+  version "0.41.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/eks/-/eks-0.41.0.tgz#2d6c9988c8173c0e633cb600552f3f1411e081e2"
+  integrity sha512-xTJvN3lcX9W9l55llcDKHAKpYERyc3yRd9wTW6gPwBwwAJRTw9T9CZNea9j0DOqr3jK5NGrFM2cxP67UQKCiGA==
   dependencies:
-    "@pulumi/aws" "^4.15.0"
+    "@pulumi/aws" "^5.1.2"
     "@pulumi/kubernetes" "^3.0.0"
     "@pulumi/pulumi" "^3.0.0"
     axios "^0.21.1"
     https-proxy-agent "^5.0.0"
     js-yaml "^3.13.0"
     netmask "^2.0.1"
+    semver "^7.3.7"
     which "^1.3.1"
 
 "@pulumi/kubernetes@^3.0.0":
@@ -729,6 +730,13 @@ long@^4.0.0:
   resolved "https://registry.yarnpkg.com/long/-/long-4.0.0.tgz#9a7b71cfb7d361a194ea555241c92f7468d5bf28"
   integrity sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA==
 
+lru-cache@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-6.0.0.tgz#6d6fe6570ebd96aaf90fcad1dafa3b2566db3a94"
+  integrity sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==
+  dependencies:
+    yallist "^4.0.0"
+
 make-error@^1.1.1:
   version "1.3.6"
   resolved "https://registry.yarnpkg.com/make-error/-/make-error-1.3.6.tgz#2eb2e37ea9b67c4891f684a1394799af484cf7a2"
@@ -948,6 +956,13 @@ semver@^6.1.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
+
+semver@^7.3.7:
+  version "7.3.7"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.7.tgz#12c5b649afdbf9049707796e22a4028814ce523f"
+  integrity sha512-QlYTucUYOews+WeEujDoEGziz4K6c47V/Bd+LjSSYcA94p+DmINdf7ncaUinThfvZyu13lN9OY1XDxt8C0Tw0g==
+  dependencies:
+    lru-cache "^6.0.0"
 
 shell-quote@^1.6.1:
   version "1.7.3"
@@ -1197,6 +1212,11 @@ y18n@^5.0.5:
   version "5.0.8"
   resolved "https://registry.yarnpkg.com/y18n/-/y18n-5.0.8.tgz#7f4934d0f7ca8c56f95314939ddcd2dd91ce1d55"
   integrity sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==
+
+yallist@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/yallist/-/yallist-4.0.0.tgz#9bb92790d9c0effec63be73519e11a35019a3a72"
+  integrity sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
 
 yaml@1.10.2:
   version "1.10.2"
