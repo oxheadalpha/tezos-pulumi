@@ -3,6 +3,8 @@ import * as pulumi from "@pulumi/pulumi"
 import * as YAML from "yaml"
 import merge from "ts-deepmerge"
 
+import * as ParseOptions from "yaml/dist/options"
+
 /**
  * Checks if `value` is object-like. A value is object-like if it's not `null`
  * and has a `typeof` result of "object".
@@ -21,11 +23,11 @@ export const getEnvVar = (name: string): string => {
 export const parseYamlFile = ({
   file,
   resource,
-  options
+  options,
 }: {
   file: string
   resource?: pulumi.Resource
-  options?: YAML.Options
+  options?: typeof ParseOptions
 }) => {
   try {
     const yamlFile = readFileSync(file, "utf8")
