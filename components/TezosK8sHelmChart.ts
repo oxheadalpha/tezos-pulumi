@@ -9,13 +9,17 @@ import {
 
 import { ChartOpts, LocalChartOpts } from "@pulumi/kubernetes/helm/v3"
 
-/** We hardcode the chart's `config` properties `chart` and `fetchOpts` to
- * install the `tezos-k8s` chart */
+/** We hardcode the chart's `config.fetchOpts` property to use
+ * `tezos-helm-charts` as the Helm repo. The `chart` property we will add as an
+ * optional property and it defaults to `tezos-chain`. */
 type CustomChartOpts = Omit<ChartOpts, "chart" | "fetchOpts">
 /** Make that user can't specify both ChartOpts and LocalChartOpts */
 type CustomChartConfig = CustomChartOpts | LocalChartOpts
 /** Describes the Helm chart config */
 export type TezosK8sHelmChartConfig = CustomChartConfig & {
+  /** Chart to use in the `tezos-k8s` helm repo. Example `pyrometer`. Defaults
+   * to `tezos-chain`. */
+  chart?: string
   /**
    * Path to a tezos-k8s Helm chart values file(s). File precedence goes from
    * right to left. Values will be overridden by the `values` property.
@@ -89,7 +93,7 @@ export class TezosK8sHelmChart extends pulumi.ComponentResource {
       // The `chart` and `fetchOpts` props can't be set on `filledInConfig`
       // unless it is casted to `ChartOpts`.
       const configAsChartOpts = filledInConfig as ChartOpts
-      configAsChartOpts.chart = "tezos-chain"
+      configAsChartOpts.chart = config.chart || "tezos-chain"
       configAsChartOpts.fetchOpts = {
         repo: "https://oxheadalpha.github.io/tezos-helm-charts/",
       }
