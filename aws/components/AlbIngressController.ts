@@ -129,6 +129,7 @@ export default class AlbIngressController extends pulumi.ComponentResource {
     this.registerOutputs()
   }
 
+  // https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/a92e689dfe464f5b24784f398947e0fef31dc470/docs/install/iam_policy.json
   private createPolicy() {
     return new aws.iam.Policy(
       "alb-ingress-controller",
@@ -140,13 +141,23 @@ export default class AlbIngressController extends pulumi.ComponentResource {
           Statement: [
             {
               Effect: "Allow",
+              Action: ["iam:CreateServiceLinkedRole"],
+              Resource: "*",
+              Condition: {
+                StringEquals: {
+                  "iam:AWSServiceName": "elasticloadbalancing.amazonaws.com",
+                },
+              },
+            },
+            {
+              Effect: "Allow",
               Action: [
-                "iam:CreateServiceLinkedRole",
                 "ec2:DescribeAccountAttributes",
                 "ec2:DescribeAddresses",
                 "ec2:DescribeAvailabilityZones",
                 "ec2:DescribeInternetGateways",
                 "ec2:DescribeVpcs",
+                "ec2:DescribeVpcPeeringConnections",
                 "ec2:DescribeSubnets",
                 "ec2:DescribeSecurityGroups",
                 "ec2:DescribeInstances",
