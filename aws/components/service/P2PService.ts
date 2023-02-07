@@ -24,9 +24,9 @@ export interface P2PServiceArgs {
   /**
    * ServiceSpec describes the attributes that a user creates on a service. The
    * default service spec sets `ports` to `9732`, `type` to `LoadBalancer`, and
-   * `selector` to `{ appType: "tezos-node" }`.
+   * `selector` to `{ appType: "octez-node" }`.
    *
-   * The service will target all Tezos nodes with label "tezos-node". tezos-k8s
+   * The service will target all Tezos nodes with label "octez-node". tezos-k8s
    * adds this label to all nodes by default.
    */
   spec?: k8sInputTypes.core.v1.ServiceSpec
@@ -101,7 +101,7 @@ export class P2PService extends pulumi.ComponentResource {
               },
             ],
             type: "LoadBalancer",
-            selector: { appType: "tezos-node" },
+            selector: { appType: "octez-node" },
           },
           args.spec || {},
         ]),
