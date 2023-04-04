@@ -1,8 +1,11 @@
+import * as aws from "@pulumi/aws"
 import * as awsx from "@pulumi/awsx"
 import * as eks from "@pulumi/eks"
 import * as k8s from "@pulumi/kubernetes"
 import * as pulumi from "@pulumi/pulumi"
 import * as tezos from "@oxheadalpha/tezos-pulumi"
+
+import createEbsCsiRole from "./ebsCsi"
 
 /** https://www.pulumi.com/docs/intro/concepts/project/ */
 const project = pulumi.getProject()
@@ -83,6 +86,18 @@ export const clusterStatus = cluster.eksCluster.status
 export const kubeconfig = pulumi.secret(cluster.kubeconfig)
 export const clusterOidcArn = cluster.core.oidcProvider!.arn
 export const clusterOidcUrl = cluster.core.oidcProvider!.url
+
+/** https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html */
+const csiRole = createEbsCsiRole({ clusterOidcArn, clusterOidcUrl })
+const ebsCsiDriverAddon = new aws.eks.Addon(
+  "ebs-csi-driver",
+  {
+    clusterName: clusterName,
+    addonName: "aws-ebs-csi-driver",
+    serviceAccountRoleArn: csiRole.arn,
+  },
+  { parent: cluster }
+)
 
 /**
  * The default gp2 storage class on EKS doesn't allow for volumes to be
