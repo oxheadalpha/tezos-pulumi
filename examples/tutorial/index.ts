@@ -19,6 +19,7 @@ const projectStack = `${project}-${stack}`
 const vpc = new awsx.ec2.Vpc(
   projectStack,
   {
+    numberOfAvailabilityZones: 2,
     subnetSpecs: [
       // Tag subnets for specific load-balancer usage.
       // Any non-null tag value is valid.
