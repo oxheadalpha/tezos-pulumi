@@ -63,6 +63,7 @@ export const vpcPrivateSubnetIds = vpc.privateSubnetIds
  */
 const cluster = new eks.Cluster(projectStack, {
   version: "1.25",
+  createOidcProvider: true,
   vpcId,
   publicSubnetIds: vpc.publicSubnetIds,
   privateSubnetIds: vpc.privateSubnetIds,
@@ -80,6 +81,8 @@ export const clusterId = cluster.eksCluster.id
 export const clusterVersion = cluster.eksCluster.version
 export const clusterStatus = cluster.eksCluster.status
 export const kubeconfig = pulumi.secret(cluster.kubeconfig)
+export const clusterOidcArn = cluster.core.oidcProvider!.arn
+export const clusterOidcUrl = cluster.core.oidcProvider!.url
 
 /**
  * The default gp2 storage class on EKS doesn't allow for volumes to be
