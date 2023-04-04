@@ -62,6 +62,7 @@ export const vpcPrivateSubnetIds = vpc.privateSubnetIds
  * vpc zones.
  */
 const cluster = new eks.Cluster(projectStack, {
+  version: "1.25",
   vpcId,
   publicSubnetIds: vpc.publicSubnetIds,
   privateSubnetIds: vpc.privateSubnetIds,
