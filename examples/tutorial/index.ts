@@ -19,15 +19,15 @@ const projectStack = `${project}-${stack}`
 const vpc = new awsx.ec2.Vpc(
   projectStack,
   {
-    subnets: [
+    subnetSpecs: [
       // Tag subnets for specific load-balancer usage.
       // Any non-null tag value is valid.
       // See:
       //  - https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
       //  - https://github.com/pulumi/pulumi-eks/issues/196
       //  - https://github.com/pulumi/pulumi-eks/issues/415
-      { type: "public", tags: { "kubernetes.io/role/elb": "1" } },
-      { type: "private", tags: { "kubernetes.io/role/internal-elb": "1" } },
+      { type: "Public", tags: { "kubernetes.io/role/elb": "1" } },
+      { type: "Private", tags: { "kubernetes.io/role/internal-elb": "1" } },
     ],
   },
   {
@@ -51,7 +51,7 @@ const vpc = new awsx.ec2.Vpc(
 )
 
 /** Stack outputs: https://www.pulumi.com/learn/building-with-pulumi/stack-outputs/ */
-export const vpcId = vpc.id
+export const vpcId = vpc.vpcId
 export const vpcPublicSubnetIds = vpc.publicSubnetIds
 export const vpcPrivateSubnetIds = vpc.privateSubnetIds
 
@@ -61,7 +61,7 @@ export const vpcPrivateSubnetIds = vpc.privateSubnetIds
  * vpc zones.
  */
 const cluster = new eks.Cluster(projectStack, {
-  vpcId: vpc.id,
+  vpcId,
   publicSubnetIds: vpc.publicSubnetIds,
   privateSubnetIds: vpc.privateSubnetIds,
   // At time of writing we found this instance type to be adequate
