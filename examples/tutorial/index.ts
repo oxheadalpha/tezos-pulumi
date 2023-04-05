@@ -101,23 +101,26 @@ const ebsCsiDriverAddon = new aws.eks.Addon(
 
 /**
  * The default gp2 storage class on EKS doesn't allow for volumes to be
- * expanded. Create a storage class here that allows for expansion.
+ * expanded. Create a storage class here that allows for expansion. Also use the
+ * gp3 type.
+ *
+ * https://aws.amazon.com/blogs/storage/migrate-your-amazon-ebs-volumes-from-gp2-to-gp3-and-save-up-to-20-on-costs/
  *
  * https://www.jeffgeerling.com/blog/2019/expanding-k8s-pvs-eks-on-aws
  */
-const gp2ExpansionStorageClass = new k8s.storage.v1.StorageClass(
-  "gp2-volume-expansion",
+const gp3ExpansionStorageClass = new k8s.storage.v1.StorageClass(
+  "gp3",
   {
-    provisioner: "kubernetes.io/aws-ebs",
-    allowVolumeExpansion: true,
-    parameters: {
-      type: "gp2",
-      fsType: "ext4",
+    metadata: {
+      name: "gp3",
     },
+    allowVolumeExpansion: true,
+    provisioner: "ebs.csi.aws.com",
     volumeBindingMode: "WaitForFirstConsumer",
     reclaimPolicy: "Delete",
-    metadata: {
-      name: "gp2-volume-expansion",
+    parameters: {
+      type: "gp3",
+      fsType: "ext4",
     },
   },
   { provider: cluster.provider, parent: cluster }
