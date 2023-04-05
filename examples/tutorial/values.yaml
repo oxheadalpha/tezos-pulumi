@@ -6,7 +6,7 @@ nodes:
     # us to expand an EBS volume's size. The default gp2 storage class created
     # by EKS does not allow for volume expansion. We tell our `rolling-nodes` to
     # use this storage class.
-    storageClassName: "gp2-volume-expansion"
+    storageClassName: "gp3"
     # Run the Octez implementation of Tezos node, as opposed to Tezedge's
     # implementation.
     runs:
@@ -24,8 +24,4 @@ nodes:
 # Have the nodes download and use a tarball of a mainnet rolling node
 # filesystem. This allows the nodes to sync much faster with the head of the
 # chain than if they started from the genesis block.
-rolling_tarball_url: http://tezos-tarballs.s3-website.us-east-2.amazonaws.com/mainnet-rolling-tarball
-# The default tezos-k8s Helm chart values.yaml uses this field by default. So we
-# set it to null here to disable it and use the tarball url instead. Syncing a
-# node from a tarball is much faster than a Tezos snapshot.
-rolling_snapshot_url: null
+rolling_tarball_url: https://mainnet.xtz-shots.io/rolling
