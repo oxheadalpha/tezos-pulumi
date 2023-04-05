@@ -7,8 +7,7 @@ nodes:
     # by EKS does not allow for volume expansion. We tell our `rolling-nodes` to
     # use this storage class.
     storageClassName: "gp3"
-    # Run the Octez implementation of Tezos node, as opposed to Tezedge's
-    # implementation.
+    # Run the Octez implementation of Tezos node.
     runs:
       - octez_node
     # Create 2 Tezos rolling nodes that will be distributed across the 2 cluster
@@ -23,5 +22,8 @@ nodes:
 
 # Have the nodes download and use a tarball of a mainnet rolling node
 # filesystem. This allows the nodes to sync much faster with the head of the
-# chain than if they started from the genesis block.
-rolling_tarball_url: https://mainnet.xtz-shots.io/rolling
+# chain than if they started from the genesis block. By default, tezos-k8s will
+# download and unpack a Tezos native snapshot. A tarball is a LZ4-compressed
+# filesystem tar of a node's data directory. It is faster to download and
+# bootstrap the node. https://xtz-shots.io/ is the default source of the tar.
+prefer_tarballs: true
