@@ -174,7 +174,7 @@ const helmChart = new tezos.TezosK8sHelmChart(
 
 /** Create the RPC ingress to expose your node's RPC endpoint. The alb
  * controller will create an application load balancer. */
-const rpcIngress = new tezos.aws.RpcIngress(
+export const rpcIngress = new tezos.aws.RpcIngress(
   `${namespace}-rpc-ingress`,
   { metadata: { name: `${namespace}-rpc-ingress`, namespace } },
   {
@@ -182,4 +182,4 @@ const rpcIngress = new tezos.aws.RpcIngress(
     dependsOn: albController.chart.ready,
     parent: mainnetNamespace,
   }
-)
+).ingress.status.loadBalancer.ingress[0].hostname
