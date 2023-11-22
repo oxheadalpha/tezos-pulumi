@@ -13,7 +13,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@pulumi/awsx": "0.40.0",
