@@ -1,7 +1,7 @@
 import { readFileSync } from "fs"
 import * as pulumi from "@pulumi/pulumi"
 import * as YAML from "yaml"
-import merge from "ts-deepmerge"
+import { merge } from "ts-deepmerge"
 
 import * as ParseOptions from "yaml/dist/options"
 

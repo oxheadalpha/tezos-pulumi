@@ -1,6 +1,6 @@
 import * as pulumi from "@pulumi/pulumi"
 import * as k8s from "@pulumi/kubernetes"
-import merge from "ts-deepmerge"
+import { merge } from "ts-deepmerge"
 import { mergeWithArrayOverrideOption } from "../../../helpers"
 
 import * as k8sInputTypes from "@pulumi/kubernetes/types/input"
